@@ -1,0 +1,15 @@
+{
+	"catchAllFile": {
+		"path": "/index.html",
+		"headers": {
+		},
+		"envReplacements": {
+		}
+	},
+	"files": [
+	],
+	"aliases": [
+	],
+	"globalHeaders": {
+	}
+}

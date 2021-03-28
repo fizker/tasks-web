@@ -1,0 +1,15 @@
+services:
+  web-prod:
+    build: .
+    ports:
+      - "8081:80"
+  web-dev:
+    image: fizker/serve-prepare
+    ports:
+      - "8082:80"
+    volumes:
+      - "./serve-setup-request.json:/root/serve-setup-request.json:ro"
+      - type: bind
+        source: ./static
+        target: /root/target
+        consistency: cached

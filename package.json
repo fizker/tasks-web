@@ -1,0 +1,15 @@
+{
+  "name": "tasks-web",
+  "version": "0.0.1",
+  "description": "Web interface for the Tasks API server",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "WTFPL",
+  "dependencies": {},
+  "devDependencies": {
+    "@fizker/serve-prepare": "^0.3.0"
+  }
+}
