@@ -1,7 +1,7 @@
 #############################
 
 
-FROM node:erbium-alpine as client
+FROM node:fermium-alpine as client
 WORKDIR /root
 
 # Copying files required for installing dependencies. We do this first, because
@@ -14,8 +14,7 @@ RUN npm install
 # Copy the rest of the code in. Remember to add tests, node_modules and other non-essentials to `.dockerignore`
 COPY . .
 
-### This is where webpack is building. Alter as necessary
-#RUN npx webpack
+RUN npx webpack
 
 
 #############################
