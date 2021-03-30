@@ -4,7 +4,8 @@
   "description": "Web interface for the Tasks API server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "flow": "flow check"
   },
   "author": "",
   "license": "WTFPL",
@@ -15,9 +16,12 @@
   "devDependencies": {
     "@babel/core": "^7.13.13",
     "@babel/preset-env": "^7.13.12",
+    "@babel/preset-flow": "^7.13.13",
     "@babel/preset-react": "^7.13.13",
     "@fizker/serve-prepare": "^0.3.0",
     "babel-loader": "^8.2.2",
+    "flow-bin": "^0.147.0",
+    "flow-typed": "^3.3.1",
     "webpack": "^5.28.0",
     "webpack-cli": "^4.6.0"
   }
