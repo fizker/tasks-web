@@ -20,7 +20,7 @@ export type ProjectDTO = {
 	name: string,
 	description: string,
 	status?: ?ProjectStatus,
-	tasks?: ?Array<TaskDTO>,
+	tasks?: ?$ReadOnlyArray<TaskDTO>,
 }
 
 export type TodoDTO = {

@@ -1,11 +1,12 @@
 // @flow
 
-import React from "react"
+import * as React from "react"
 import ReactDOM from "react-dom"
 
+import { Projects } from "./routes/Projects.js"
+
 const app = <>
-	<h1>Hello World</h1>
-	<p>This is rendered in React!</p>
+	<Projects />
 </>
 
 const container = document.querySelector("#root")

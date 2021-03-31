@@ -9,5 +9,12 @@ all=error
 
 [options]
 sharedmemory.heap_size=3221225472
+exact_by_default=true
 
 [strict]
+nonstrict-import
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+sketchy-null
