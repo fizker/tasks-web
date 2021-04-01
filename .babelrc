@@ -1,9 +1,11 @@
 {
+	"targets": {
+		"safari": "14"
+	},
 	"plugins": [
 		"@babel/plugin-proposal-class-properties"
 	],
 	"presets": [
-		"@babel/preset-env",
 		"@babel/preset-flow",
 		"@babel/preset-react"
 	]

@@ -1,37 +1,17 @@
 // @flow strict
 
 import * as React from "react"
+import { useSelector } from "react-redux"
 
 import { ProjectList } from "../views/ProjectList.js"
 import type { ProjectDTO } from "../dtos.js"
 
-type Props = {
-}
-type State = {
-	projects: ?$ReadOnlyArray<ProjectDTO>,
-}
+export function Projects() : React.Node {
+	const projects = useSelector(x => x.projects)
 
-export class Projects extends React.Component<Props, State> {
-	#projects: ?Promise<$ReadOnlyArray<ProjectDTO>>
-
-	state: State = {
-		projects: null,
+	if(projects == null) {
+		return <div>Loading...</div>
 	}
 
-	componentDidMount() {
-		this.#projects = fetch("http://localhost:8080/projects")
-			.then(x => x.json())
-		this.#projects
-			.then(x => this.setState({ projects: x }))
-	}
-
-	render() : React.Node {
-		const { projects } = this.state
-
-		if(projects == null) {
-			return <div>Loading...</div>
-		}
-
-		return <ProjectList projects={projects} />
-	}
+	return <ProjectList projects={projects} />
 }
