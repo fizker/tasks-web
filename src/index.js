@@ -3,11 +3,9 @@
 import * as React from "react"
 import ReactDOM from "react-dom"
 
-import { Projects } from "./routes/Projects.js"
+import { App } from "./App.js"
 
-const app = <>
-	<Projects />
-</>
+const app = <App />
 
 const container = document.querySelector("#root")
 if(container == null) {
