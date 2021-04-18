@@ -1,0 +1,22 @@
+/**
+ * Flowtype definitions for redux-thunk v. ^2.3.0
+ * @flow
+ */
+
+declare module "redux-thunk" {
+
+import type { Middleware, MiddlewareAPI, Dispatch, Action } from "redux";
+
+declare export type ThunkDispatch<State, E, A: Action<*>> = {
+  <T: A>(action: T): T,
+  <R>(asyncAction: ThunkAction<State, A, R, E>): R,
+};
+
+declare export type ThunkAction<State, A: Action<*>, ReturnValue = void, ExtraArgument = void> = (
+  dispatch: ThunkDispatch<State, ExtraArgument, A>,
+  getState?: () => State,
+  extraArgument?: ExtraArgument
+) => ReturnValue;
+
+declare export default function ThunkMiddleware<S, A, D = Dispatch<A>>(api: MiddlewareAPI<S, A, D>) : (next: D) => D;
+}

@@ -3,6 +3,8 @@
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
+import type { Store, DispatchAPI } from "redux"
+import type { ThunkAction } from "redux-thunk"
 import type { ProjectDTO } from "./dtos.js"
 
 type State = {
@@ -14,7 +16,11 @@ type Action =
 		projects: $ReadOnlyArray<ProjectDTO>,
 	}
 
-export async function fetchProjects(dispatch: (Action) => void) {
+type DispatchAction =
+	| ThunkAction<State, Action, Promise<void>>
+	| Action
+
+export const fetchProjects: ThunkAction<State, Action, Promise<void>> = async(dispatch) => {
 	const response = await fetch("http://localhost:8080/projects")
 	const json = await response.json()
 	dispatch({ type: "PROJECTS_LOADED", projects: json })
@@ -34,4 +40,4 @@ function reducer(state: ?State, action: Action) : State {
 	}
 }
 
-export const store = createStore(reducer, applyMiddleware(thunkMiddleware))
+export const store: Store<State, Action, DispatchAPI<DispatchAction>> = createStore(reducer, applyMiddleware(thunkMiddleware))
