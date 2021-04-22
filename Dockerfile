@@ -9,7 +9,7 @@ WORKDIR /root
 # as much as possible
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --production
 
 # Copy the rest of the code in. Remember to add tests, node_modules and other non-essentials to `.dockerignore`
 COPY . .
