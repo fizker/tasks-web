@@ -4,6 +4,7 @@
 		"headers": {
 		},
 		"envReplacements": {
+			"${SERVER_URL}": "SERVER_URL"
 		}
 	},
 	"files": [

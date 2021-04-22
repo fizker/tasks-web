@@ -22,7 +22,7 @@ type DispatchAction =
 	| Action
 
 export const fetchProjects: ThunkAction<State, Action, Promise<void>> = async(dispatch) => {
-	const response = await fetch("http://localhost:8080/projects")
+	const response = await fetch(`${SERVER_URL}/projects`)
 	const json = await response.json()
 	dispatch({ type: "PROJECTS_LOADED", projects: json })
 }
