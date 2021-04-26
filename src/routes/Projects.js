@@ -1,10 +1,9 @@
 // @flow strict
 
 import * as React from "react"
-import { useSelector } from "react-redux"
 
+import { useAppSelector as useSelector } from "../store"
 import { ProjectList } from "../views/ProjectList.js"
-import type { ProjectDTO } from "../dtos.js"
 
 export function Projects() : React.Node {
 	const projects = useSelector(x => x.projects)

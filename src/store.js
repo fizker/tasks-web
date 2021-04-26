@@ -1,5 +1,6 @@
 // @flow strict
 
+import { useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
@@ -41,3 +42,4 @@ function reducer(state: ?State, action: Action) : State {
 }
 
 export const store: Store<State, Action, DispatchAPI<DispatchAction>> = createStore(reducer, applyMiddleware(thunkMiddleware))
+export function useAppSelector<T>(fn: (State) => T, eq?: (T, T) => boolean) : T { return useSelector(fn, eq) }
