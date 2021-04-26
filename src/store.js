@@ -4,17 +4,19 @@ import { useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
+import { Project, Task } from "./data.js"
+
 import type { Store, DispatchAPI } from "redux"
 import type { ThunkAction } from "redux-thunk"
 import type { ProjectDTO } from "./dtos.js"
 
 type State = {
-	projects: ?$ReadOnlyArray<ProjectDTO>,
+	projects: ?$ReadOnlyArray<Project>,
 }
 type Action =
 	| {
 		type: "PROJECTS_LOADED",
-		projects: $ReadOnlyArray<ProjectDTO>,
+		projects: $ReadOnlyArray<Project>,
 	}
 
 type DispatchAction =
@@ -23,8 +25,14 @@ type DispatchAction =
 
 export const fetchProjects: ThunkAction<State, Action, Promise<void>> = async(dispatch) => {
 	const response = await fetch(`${SERVER_URL}/projects`)
-	const json = await response.json()
-	dispatch({ type: "PROJECTS_LOADED", projects: json })
+	const json: $ReadOnlyArray<ProjectDTO> = await response.json()
+	dispatch({
+		type: "PROJECTS_LOADED",
+		projects: json.map(x => new Project({
+			...x,
+			tasks: x.tasks?.map(x => new Task(x)),
+		})),
+	})
 }
 
 function reducer(state: ?State, action: Action) : State {
