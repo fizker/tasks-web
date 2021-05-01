@@ -4,3 +4,15 @@ h1 {
 p {
 	color: gainsboro;
 }
+
+#main-menu {
+
+}
+
+#main-menu a {
+	margin-left: 1rem;
+}
+
+#main-menu a:first-child {
+	margin-left: 0;
+}
