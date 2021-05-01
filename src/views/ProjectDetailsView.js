@@ -34,8 +34,7 @@ function sortTask(x: Task, y: Task) : number {
 export function ProjectDetailsView({ project }: Props) : React.Node {
 	const p = project
 	const tasks = p.get("tasks")
-	return <fieldset>
-		<legend>{p.get("name")}</legend>
+	return <>
 		<MarkdownTextView>{p.get("description")}</MarkdownTextView>
 		{tasks == null ? null : <>
 			<hr />
@@ -45,5 +44,5 @@ export function ProjectDetailsView({ project }: Props) : React.Node {
 				<MarkdownTextView>{t.get("description")}</MarkdownTextView>
 			</div>)}
 		</>}
-	</fieldset>
+	</>
 }

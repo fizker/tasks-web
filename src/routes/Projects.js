@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { useAppSelector as useSelector } from "../store"
+import { Page } from "./Page.js"
 import { ProjectList } from "../views/ProjectList.js"
 
 export function Projects() : React.Node {
@@ -12,5 +13,7 @@ export function Projects() : React.Node {
 		return <div>Loading...</div>
 	}
 
-	return <ProjectList projects={projects} />
+	return <Page name="All projects">
+		<ProjectList projects={projects} />
+	</Page>
 }

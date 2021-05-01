@@ -4,6 +4,7 @@ import * as React from "react"
 import { useParams } from "react-router-dom"
 
 import { useAppSelector as useSelector } from "../store"
+import { Page } from "./Page.js"
 import { ProjectDetailsView } from "../views/ProjectDetailsView.js"
 
 export function ShowProject() : React.Node {
@@ -19,5 +20,7 @@ export function ShowProject() : React.Node {
 		return <div>Project not found</div>
 	}
 
-	return <ProjectDetailsView project={project} />
+	return <Page name={project.get("name")}>
+		<ProjectDetailsView project={project} />
+	</Page>
 }
