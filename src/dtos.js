@@ -2,24 +2,30 @@
 
 export type UUID = string
 
-type TaskStatus = "notStarted" | "done"
+export const TaskStatus = {
+	"notStarted": "notStarted",
+	"done": "done",
+}
 
 export type TaskDTO = {
 	id?: ?UUID,
 	name: string,
 	description: string,
 	sortOrder?: ?number,
-	status?: ?TaskStatus,
+	status?: ?$Keys<typeof TaskStatus>,
 	project?: ?UUID,
 }
 
-type ProjectStatus = "active" | "onHold"
+export const ProjectStatus = {
+	"active": "active",
+	"onHold": "onHold",
+}
 
 export type ProjectDTO = {
 	id?: ?UUID,
 	name: string,
 	description: string,
-	status?: ?ProjectStatus,
+	status?: ?$Keys<typeof ProjectStatus>,
 	tasks?: ?$ReadOnlyArray<TaskDTO>,
 }
 
@@ -30,11 +36,11 @@ export type TodoDTO = {
 
 type TaskUpdate = {
 	id: UUID,
-	status: TaskStatus,
+	status: $Keys<typeof TaskStatus>,
 }
 
 export type UpdateTodoDTO = {
 	project: UUID,
-	projectStatus?: ?ProjectStatus,
+	projectStatus?: ?$Keys<typeof ProjectStatus>,
 	task?: ?TaskUpdate,
 }

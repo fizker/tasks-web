@@ -5,6 +5,8 @@ import type { RecordFactory, RecordOf } from "immutable"
 
 import type { ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
 
+export { ProjectStatus, TaskStatus } from "./dtos.js"
+
 const defaultTask: TaskDTO = {
 	id: undefined,
 	name: "",
