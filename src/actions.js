@@ -30,10 +30,10 @@ export type Action =
 	| ProjectsLoadedAction
 	| CurrentTodoAction
 
-type AppThunkAction<A: Action, ReturnValue = Promise<void>> = ThunkAction<State, A, ReturnValue>
+type AppThunkAction = ThunkAction<State, Action>
 
 export type DispatchAction =
-	| AppThunkAction<Action>
+	| AppThunkAction
 	| Action
 
 function parseProject(dto: ProjectDTO): Project {
@@ -43,7 +43,15 @@ function parseProject(dto: ProjectDTO): Project {
 	})
 }
 
-export const fetchProjects: AppThunkAction<ProjectsLoadedAction> = async(dispatch) => {
+function parseTodo(dto: TodoDTO) : Todo {
+	return new Todo({
+		...dto,
+		project: parseProject(dto.project),
+		task: dto.task ? new Task(dto.task) : null,
+	})
+}
+
+export const fetchProjects: AppThunkAction = async(dispatch) => {
 	const response = await fetch(`${SERVER_URL}/projects`)
 	const json: $ReadOnlyArray<ProjectDTO> = await response.json()
 	dispatch({
@@ -52,16 +60,12 @@ export const fetchProjects: AppThunkAction<ProjectsLoadedAction> = async(dispatc
 	})
 }
 
-export const fetchCurrentTodo: AppThunkAction<CurrentTodoDidLoadAction> = async(dispatch) => {
-	//dispatch({ type: "CURRENT_TODO_WILL_LOAD" })
+export const fetchCurrentTodo: AppThunkAction = async(dispatch) => {
+	dispatch({ type: "CURRENT_TODO_WILL_LOAD" })
 	const response = await fetch(`${SERVER_URL}/todo`)
 	const json: TodoDTO = await response.json()
 	dispatch({
 		type: "CURRENT_TODO_DID_LOAD",
-		todo: new Todo({
-			...json,
-			project: parseProject(json.project),
-			task: json.task ? new Task(json.task) : null,
-		}),
+		todo: parseTodo(json),
 	})
 }
