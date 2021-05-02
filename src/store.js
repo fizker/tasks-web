@@ -20,7 +20,12 @@ const defaultState: State = {
 
 function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
-	case "PROJECTS_LOADED":
+	case "PROJECTS_WILL_LOAD":
+		return {
+			...state,
+			projects: null,
+		}
+	case "PROJECTS_DID_LOAD":
 		return {
 			...state,
 			projects: action.projects,

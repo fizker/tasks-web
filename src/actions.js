@@ -28,10 +28,17 @@ async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDT
 }
 
 type ReduxInitAction = { type: "INIT" }
-type ProjectsLoadedAction = {
-	type: "PROJECTS_LOADED",
+
+type ProjectsWillLoadAction = {
+	type: "PROJECTS_WILL_LOAD",
+}
+type ProjectsDidLoadAction = {
+	type: "PROJECTS_DID_LOAD",
 	projects: $ReadOnlyArray<Project>,
 }
+type ProjectsAction =
+	| ProjectsWillLoadAction
+	| ProjectsDidLoadAction
 
 type CurrentTodoWillLoadAction = {
 	type: "CURRENT_TODO_WILL_LOAD",
@@ -47,14 +54,14 @@ type CurrentTodoAction =
 
 export type Action =
 	| ReduxInitAction
-	| ProjectsLoadedAction
+	| ProjectsAction
 	| CurrentTodoAction
-
-type AppThunkAction = ThunkAction<State, Action>
 
 export type DispatchAction =
 	| AppThunkAction
 	| Action
+
+type AppThunkAction = ThunkAction<State, DispatchAction>
 
 function parseProject(dto: ProjectDTO): Project {
 	return new Project({
@@ -72,9 +79,12 @@ function parseTodo(dto: TodoDTO) : Todo {
 }
 
 export const fetchProjects: AppThunkAction = async(dispatch) => {
+	dispatch({
+		type: "PROJECTS_WILL_LOAD",
+	})
 	const json: $ReadOnlyArray<ProjectDTO> = await get("/projects")
 	dispatch({
-		type: "PROJECTS_LOADED",
+		type: "PROJECTS_DID_LOAD",
 		projects: json.map(parseProject),
 	})
 }
@@ -119,5 +129,7 @@ export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppTh
 			type: "CURRENT_TODO_DID_LOAD",
 			todo: parseTodo(json),
 		})
+
+		dispatch(fetchProjects)
 	}
 }
