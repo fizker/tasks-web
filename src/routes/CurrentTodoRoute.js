@@ -1,13 +1,15 @@
 // @flow strict
 
 import * as React from "react"
+import { Link } from "react-router-dom"
 
 import {
 	useAppDispatch as useDispatch, useAppSelector as useSelector,
 	fetchCurrentTodo,
 } from "../store"
+
 import { Page } from "./Page.js"
-import { LoadingDataView } from "../views/LoadingDataView.js"
+import { ActionButtonListView, LoadingDataView, MarkdownTextView, SectionView } from "../views.js"
 
 export function CurrentTodoRoute() : React.Node {
 	const dispatch = useDispatch()
@@ -21,8 +23,25 @@ export function CurrentTodoRoute() : React.Node {
 		return <LoadingDataView />
 	}
 
+	const project = currentTodo.get("project")
+	const task = currentTodo.get("task")
+
 	return <Page name="Current todo">
-		Project: {currentTodo.get("project").get("name")}
-		Task: {currentTodo.get("task")?.get("name") ?? "No task"}
+		<SectionView
+			name={<>Project: <Link to={`/projects/${project.get("id") ?? ""}`}>
+				{project.get("name")}
+			</Link></>}
+		>
+			<MarkdownTextView>{project.get("description")}</MarkdownTextView>
+		</SectionView>
+		{ task
+			? <SectionView name={"Task: " + task.get("name")}>
+				<MarkdownTextView>{task.get("description")}</MarkdownTextView>
+				<ActionButtonListView buttons={[
+					{ text: "Mark as done" },
+				]}/>
+			</SectionView>
+			: "No task"
+		}
 	</Page>
 }

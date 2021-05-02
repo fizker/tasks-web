@@ -1,5 +1,4 @@
 #main-menu {
-
 }
 
 #main-menu a {
@@ -7,5 +6,17 @@
 }
 
 #main-menu a:first-child {
+	margin-left: 0;
+}
+
+.action-button-list {
+	text-align: right;
+}
+
+.action-button-list button {
+	margin-left: 1rem;
+}
+
+.action-button-list button:first-child {
 	margin-left: 0;
 }

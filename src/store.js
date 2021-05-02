@@ -10,10 +10,10 @@ import type { Store, DispatchAPI } from "redux"
 import type { ThunkAction } from "redux-thunk"
 import type { ProjectDTO, TodoDTO } from "./dtos.js"
 
-type State = {
+type State = $ReadOnly<{
 	projects: ?$ReadOnlyArray<Project>,
 	currentTodo?: ?Todo,
-}
+}>
 
 type ReduxInitAction = { type: "INIT" }
 type ProjectsLoadedAction = {
