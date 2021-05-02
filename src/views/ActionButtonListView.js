@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-export type ActionButton = $ReadOnly<{ text: string, type?: "primary"|"secondary" }>
+export type ActionButton = $ReadOnly<{ text: string, type?: "primary"|"secondary", onClick: () => void }>
 
 export function ActionButtonListView({ buttons } : { buttons: $ReadOnlyArray<ActionButton> }) : React.Node {
 	return <>
@@ -10,6 +10,7 @@ export function ActionButtonListView({ buttons } : { buttons: $ReadOnlyArray<Act
 		<div class="action-button-list">
 			{buttons.map(button => <button
 				type={button.type === "primary" ? "submit" : "button"}
+				onClick={button.onClick}
 			>
 				{button.text}
 			</button>)}

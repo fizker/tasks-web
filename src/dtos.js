@@ -34,7 +34,7 @@ export type TodoDTO = {
 	task?: ?TaskDTO,
 }
 
-type TaskUpdate = {
+export type TaskUpdateDTO = {
 	id: UUID,
 	status: $Keys<typeof TaskStatus>,
 }
@@ -42,5 +42,5 @@ type TaskUpdate = {
 export type UpdateTodoDTO = {
 	project: UUID,
 	projectStatus?: ?$Keys<typeof ProjectStatus>,
-	task?: ?TaskUpdate,
+	task?: ?TaskUpdateDTO,
 }
