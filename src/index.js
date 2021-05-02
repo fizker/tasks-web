@@ -5,7 +5,8 @@ import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
 
 import { App } from "./App.js"
-import { store, fetchProjects } from "./store.js"
+import { fetchProjects } from "./actions.js"
+import { store } from "./store.js"
 
 store.dispatch(fetchProjects)
 

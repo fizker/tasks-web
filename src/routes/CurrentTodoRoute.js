@@ -3,10 +3,8 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
 
-import {
-	useAppDispatch as useDispatch, useAppSelector as useSelector,
-	fetchCurrentTodo,
-} from "../store"
+import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store"
+import { fetchCurrentTodo } from "../actions.js"
 
 import { Page } from "./Page.js"
 import { ActionButtonListView, LoadingDataView, MarkdownTextView, SectionView } from "../views.js"
