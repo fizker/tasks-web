@@ -5,8 +5,8 @@ import { useParams, Route, Routes } from "react-router-dom"
 
 import { useAppSelector as useSelector } from "../store"
 import { Page } from "./Page.js"
-import { ProjectDetailsView } from "../views/ProjectDetailsView.js"
-import { LoadingDataView } from "../views.js"
+import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
+import { Task } from "../data.js"
 
 export function ShowProject() : React.Node {
 	const { projectID } = useParams()
@@ -27,7 +27,15 @@ export function ShowProject() : React.Node {
 
 	return <Page name={project.get("name")}>
 		<Routes>
-			<Route path="/create-task" element={<div>create task</div>} />
+			<Route path="/create-task" element={
+				<TaskEditView
+					task={new Task({
+						project: project.get("id"),
+					})}
+					onSave={(task) => { console.log("saving", { task: task.toJS() }) }}
+					onCancel={() => console.log("cancelling") }
+				/>
+			}/>
 			<Route path="/" element={<ProjectDetailsView project={project} />} />
 		</Routes>
 	</Page>
