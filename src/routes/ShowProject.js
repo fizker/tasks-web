@@ -1,7 +1,7 @@
 // @flow strict
 
 import * as React from "react"
-import { useParams } from "react-router-dom"
+import { useParams, Route, Routes } from "react-router-dom"
 
 import { useAppSelector as useSelector } from "../store"
 import { Page } from "./Page.js"
@@ -11,6 +11,10 @@ import { LoadingDataView } from "../views.js"
 export function ShowProject() : React.Node {
 	const { projectID } = useParams()
 	const projects = useSelector(x => x.projects)
+
+	if(projectID == null) {
+		throw new Error("ShowProject must be used in a route with a :projectID parameter")
+	}
 
 	if(projects == null) {
 		return <LoadingDataView />
@@ -22,6 +26,9 @@ export function ShowProject() : React.Node {
 	}
 
 	return <Page name={project.get("name")}>
-		<ProjectDetailsView project={project} />
+		<Routes>
+			<Route path="/create-task" element={<div>create task</div>} />
+			<Route path="/" element={<ProjectDetailsView project={project} />} />
+		</Routes>
 	</Page>
 }

@@ -23,7 +23,7 @@ export function App() : React.Node {
 
 			<Routes>
 				<Route path="/" element={<Navigate to="/projects" />} />
-				<Route path="/projects/:projectID" element={<ShowProject />} />
+				<Route path="/projects/:projectID/*" element={<ShowProject />} />
 				<Route path="/projects" element={<Projects />} />
 				<Route path="/todo" element={<CurrentTodoRoute />} />
 			</Routes>
