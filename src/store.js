@@ -1,50 +1,18 @@
 // @flow strict
 
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
-import { Project, Task } from "./data.js"
+import { Project, Todo } from "./data.js"
 
 import type { Store, DispatchAPI } from "redux"
-import type { ThunkAction } from "redux-thunk"
-import type { ProjectDTO } from "./dtos.js"
+import type { Action, DispatchAction } from "./actions.js"
 
-type State = {
+export type State = $ReadOnly<{
 	projects: ?$ReadOnlyArray<Project>,
-}
-
-type ReduxInitAction = { type: "INIT" }
-type ProjectsLoadedAction = {
-	type: "PROJECTS_LOADED",
-	projects: $ReadOnlyArray<Project>,
-}
-
-type Action =
-	| ReduxInitAction
-	| ProjectsLoadedAction
-
-type AppThunkAction<A: Action, ReturnValue = Promise<void>> = ThunkAction<State, A, ReturnValue>
-
-type DispatchAction =
-	| AppThunkAction<Action>
-	| Action
-
-function parseProject(dto: ProjectDTO): Project {
-	return new Project({
-		...dto,
-		tasks: dto.tasks?.map(x => new Task(x)),
-	})
-}
-
-export const fetchProjects: AppThunkAction<ProjectsLoadedAction> = async(dispatch) => {
-	const response = await fetch(`${SERVER_URL}/projects`)
-	const json: $ReadOnlyArray<ProjectDTO> = await response.json()
-	dispatch({
-		type: "PROJECTS_LOADED",
-		projects: json.map(parseProject),
-	})
-}
+	currentTodo?: ?Todo,
+}>
 
 const defaultState: State = {
 	projects: null,
@@ -52,10 +20,25 @@ const defaultState: State = {
 
 function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
-	case "PROJECTS_LOADED":
+	case "PROJECTS_WILL_LOAD":
+		return {
+			...state,
+			projects: null,
+		}
+	case "PROJECTS_DID_LOAD":
 		return {
 			...state,
 			projects: action.projects,
+		}
+	case "CURRENT_TODO_WILL_LOAD":
+		return {
+			...state,
+			currentTodo: null,
+		}
+	case "CURRENT_TODO_DID_LOAD":
+		return {
+			...state,
+			currentTodo: action.todo,
 		}
 	case "INIT":
 		// Don't do anything here. Redux does not always actually call it INIT
@@ -67,4 +50,5 @@ function reducer(state?: State = defaultState, action: Action) : State {
 }
 
 export const store: Store<State, Action, DispatchAPI<DispatchAction>> = createStore(reducer, applyMiddleware(thunkMiddleware))
+export function useAppDispatch() : DispatchAPI<DispatchAction> { return useDispatch() }
 export function useAppSelector<T>(fn: (State) => T, eq?: (T, T) => boolean) : T { return useSelector(fn, eq) }

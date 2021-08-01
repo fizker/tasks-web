@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom"
 import { useAppSelector as useSelector } from "../store"
 import { Page } from "./Page.js"
 import { ProjectDetailsView } from "../views/ProjectDetailsView.js"
-import { LoadingDataView } from "../views/LoadingDataView.js"
+import { LoadingDataView } from "../views.js"
 
 export function ShowProject() : React.Node {
 	const { projectID } = useParams()

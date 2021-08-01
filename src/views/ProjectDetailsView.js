@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { MarkdownTextView } from "./MarkdownTextView.js"
+import { MarkdownTextView } from "../views.js"
 
 import { Project, Task, TaskStatus } from "../data.js"
 

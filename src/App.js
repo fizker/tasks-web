@@ -9,7 +9,7 @@ import {
 	Switch,
 } from "react-router-dom"
 
-import { CurrentTodo } from "./routes/CurrentTodo.js"
+import { CurrentTodoRoute } from "./routes/CurrentTodoRoute.js"
 import { Projects } from "./routes/Projects.js"
 import { ShowProject } from "./routes/ShowProject.js"
 
@@ -18,7 +18,7 @@ export function App() : React.Node {
 		<div>
 			<nav id="main-menu">
 				<Link to="/projects">Projects</Link>
-				<Link to="/todos/current">Current Todo</Link>
+				<Link to="/todo">Current Todo</Link>
 			</nav>
 
 			<Switch>
@@ -31,8 +31,8 @@ export function App() : React.Node {
 				<Route path="/projects">
 					<Projects />
 				</Route>
-				<Route path="/todos/current">
-					<CurrentTodo />
+				<Route path="/todo">
+					<CurrentTodoRoute />
 				</Route>
 			</Switch>
 		</div>

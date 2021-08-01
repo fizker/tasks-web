@@ -5,8 +5,9 @@
 
 declare module "redux-thunk" {
 
-import type { Middleware, MiddlewareAPI, Dispatch, Action } from "redux";
+import type { MiddlewareAPI, Dispatch, Action } from "redux";
 
+/*
 declare export type ThunkDispatch<State, E, A: Action<*>> = {
   <T: A>(action: T): T,
   <R>(asyncAction: ThunkAction<State, A, R, E>): R,
@@ -17,6 +18,12 @@ declare export type ThunkAction<State, A: Action<*>, ReturnValue = void, ExtraAr
   getState?: () => State,
   extraArgument?: ExtraArgument
 ) => ReturnValue;
+*/
+
+declare export type ThunkAction<State, Action, ExtraArgument = void> = {
+	((Action) => void, () => State, extraArgument: ExtraArgument) : Promise<void>,
+}
 
 declare export default function ThunkMiddleware<S, A, D = Dispatch<A>>(api: MiddlewareAPI<S, A, D>) : (next: D) => D;
+
 }

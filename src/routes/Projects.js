@@ -5,7 +5,7 @@ import * as React from "react"
 import { useAppSelector as useSelector } from "../store"
 import { Page } from "./Page.js"
 import { ProjectList } from "../views/ProjectList.js"
-import { LoadingDataView } from "../views/LoadingDataView.js"
+import { LoadingDataView } from "../views.js"
 
 export function Projects() : React.Node {
 	const projects = useSelector(x => x.projects)
