@@ -48,7 +48,10 @@ export function ProjectDetailsView({ project }: Props) : React.Node {
 				<Link to="create-task">Create new</Link>
 			</header>
 			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div key={t.get("id")}>
-				<h3>{t.get("name")}</h3>
+				<header>
+					<h3>{t.get("name")}</h3>
+					<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
+				</header>
 				<MarkdownTextView>{t.get("description")}</MarkdownTextView>
 			</div>)}
 		</>}

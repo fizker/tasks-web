@@ -8,6 +8,22 @@ import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
 import { Task } from "../data.js"
 
+function EditTask({ project }) {
+	const { taskID } = useParams()
+
+	const task = taskID == null ? null : project.get("tasks")?.find(x => x.get("id") === taskID)
+
+	if(task == null) {
+		return null // TODO: return 404
+	}
+
+	return <TaskEditView
+		task={task}
+		onSave={(task) => { console.log("saving", { task: task.toJS() }) }}
+		onCancel={() => { console.log("cancelling") }}
+	/>
+}
+
 export function ShowProject() : React.Node {
 	const { projectID } = useParams()
 	const projects = useSelector(x => x.projects)
@@ -36,6 +52,7 @@ export function ShowProject() : React.Node {
 					onCancel={() => console.log("cancelling") }
 				/>
 			}/>
+			<Route path="/edit-task/:taskID" element={<EditTask project={project} />} />
 			<Route path="/" element={<ProjectDetailsView project={project} />} />
 		</Routes>
 	</Page>
