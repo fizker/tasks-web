@@ -1,5 +1,7 @@
 // @flow strict
 
+import { List } from "immutable"
+
 import type { ThunkAction } from "redux-thunk"
 
 import type { ProjectDTO, TodoDTO, UpdateTodoDTO, TaskUpdateDTO } from "./dtos.js"
@@ -64,9 +66,10 @@ export type DispatchAction =
 type AppThunkAction = ThunkAction<State, DispatchAction>
 
 function parseProject(dto: ProjectDTO): Project {
+	const tasks = dto.tasks?.map(x => new Task(x))
 	return new Project({
 		...dto,
-		tasks: dto.tasks?.map(x => new Task(x)),
+		tasks: tasks ? List(tasks) : tasks,
 	})
 }
 

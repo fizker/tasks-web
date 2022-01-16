@@ -5,8 +5,10 @@ import { Link } from "react-router-dom"
 
 import { Project } from "../data.js"
 
+import type { List } from "immutable"
+
 type Props = {
-	projects: $ReadOnlyArray<Project>,
+	projects: List<Project>,
 }
 
 export function ProjectList({ projects }: Props) : React.Node {

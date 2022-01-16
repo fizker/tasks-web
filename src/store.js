@@ -1,5 +1,6 @@
 // @flow strict
 
+import { List } from "immutable"
 import { useDispatch, useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
@@ -10,7 +11,7 @@ import type { Store, DispatchAPI } from "redux"
 import type { Action, DispatchAction } from "./actions.js"
 
 export type State = $ReadOnly<{
-	projects: ?$ReadOnlyArray<Project>,
+	projects: ?List<Project>,
 	currentTodo?: ?Todo,
 }>
 
@@ -28,7 +29,7 @@ function reducer(state?: State = defaultState, action: Action) : State {
 	case "PROJECTS_DID_LOAD":
 		return {
 			...state,
-			projects: action.projects,
+			projects: List(action.projects),
 		}
 	case "CURRENT_TODO_WILL_LOAD":
 		return {
