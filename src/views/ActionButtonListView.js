@@ -7,8 +7,9 @@ export type ActionButton = $ReadOnly<{ text: string, type?: "primary"|"secondary
 export function ActionButtonListView({ buttons } : { buttons: $ReadOnlyArray<ActionButton> }) : React.Node {
 	return <>
 		<hr/>
-		<div class="action-button-list">
-			{buttons.map(button => <button
+		<div className="action-button-list">
+			{buttons.map((button, idx) => <button
+				key={idx}
 				type={button.type === "primary" ? "submit" : "button"}
 				onClick={button.onClick}
 			>
