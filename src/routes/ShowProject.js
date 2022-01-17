@@ -3,12 +3,13 @@
 import * as React from "react"
 import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 
-import { useAppSelector as useSelector } from "../store"
+import { createTask, updateTask } from "../actions"
+import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
 import { Task } from "../data.js"
 
-function EditTask({ project }) {
+function EditTask({ project, onSave, onCancel }) {
 	const { taskID } = useParams()
 	const navigate = useNavigate()
 
@@ -20,12 +21,13 @@ function EditTask({ project }) {
 
 	return <TaskEditView
 		task={task}
-		onSave={(task) => { console.log("saving", { task: task.toJS() }) }}
-		onCancel={() => { navigate("..") }}
+		onSave={onSave}
+		onCancel={onCancel}
 	/>
 }
 
 export function ShowProject() : React.Node {
+	const dispatch = useDispatch()
 	const { projectID } = useParams()
 	const projects = useSelector(x => x.projects)
 	const navigate = useNavigate()
@@ -50,11 +52,23 @@ export function ShowProject() : React.Node {
 					task={new Task({
 						project: project.get("id"),
 					})}
-					onSave={(task) => { console.log("saving", { task: task.toJS() }) }}
+					onSave={(task) => {
+						dispatch(createTask(projectID, task))
+						navigate(".")
+					}}
 					onCancel={() => { navigate(".") }}
 				/>
 			}/>
-			<Route path="/edit-task/:taskID" element={<EditTask project={project} />} />
+			<Route path="/edit-task/:taskID" element={
+				<EditTask
+					project={project}
+					onSave={(task) => {
+						dispatch(updateTask(task))
+						navigate(".")
+					}}
+					onCancel={() => { navigate(".") }}
+				/>
+			} />
 			<Route path="/" element={<ProjectDetailsView project={project} />} />
 		</Routes>
 	</Page>

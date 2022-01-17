@@ -15,9 +15,7 @@ const defaultTask: TaskDTO = {
 	status: undefined,
 	project: undefined,
 }
-const TaskRecord: RecordFactory<TaskDTO> = Record(defaultTask)
-export class Task extends TaskRecord {
-}
+export const Task: RecordFactory<TaskDTO> = Record(defaultTask)
 
 const defaultProject: ProjectDTO = {
 	id: undefined,
@@ -26,21 +24,16 @@ const defaultProject: ProjectDTO = {
 	status: undefined,
 	tasks: undefined,
 }
-const ProjectRecord: RecordFactory<{
+export const Project: RecordFactory<{
 	...ProjectDTO,
 	tasks?: ?List<Task>,
 }> = Record(defaultProject)
-export class Project extends ProjectRecord {
-}
 
 const defaultTodo: TodoDTO = {
 	project: defaultProject,
 	task: undefined,
 }
-const TodoRecord: RecordFactory<{
+export const Todo: RecordFactory<{
 	project: Project,
 	task?: ?Task,
 }> = Record(defaultTodo)
-
-export class Todo extends TodoRecord {
-}
