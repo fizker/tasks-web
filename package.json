@@ -22,7 +22,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.3",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.2.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "webpack": "^5.35.0",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@fizker/serve-prepare": "^0.3.0",
-    "flow-bin": "^0.149.0",
+    "flow-bin": "^0.169.0",
     "flow-typed": "^3.3.1"
   }
 }

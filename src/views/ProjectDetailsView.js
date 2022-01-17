@@ -39,7 +39,7 @@ export function ProjectDetailsView({ project }: Props) : React.Node {
 		{tasks == null ? null : <>
 			<hr />
 			<h2>Tasks</h2>
-			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div>
+			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div key={t.get("id")}>
 				<h3>{t.get("name")}</h3>
 				<MarkdownTextView>{t.get("description")}</MarkdownTextView>
 			</div>)}

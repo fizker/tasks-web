@@ -4,9 +4,9 @@ import * as React from "react"
 import {
 	BrowserRouter as Router,
 	Link,
-	Redirect,
+	Navigate,
 	Route,
-	Switch,
+	Routes,
 } from "react-router-dom"
 
 import { CurrentTodoRoute } from "./routes/CurrentTodoRoute.js"
@@ -17,24 +17,16 @@ export function App() : React.Node {
 	return <Router>
 		<div>
 			<nav id="main-menu">
-				<Link to="/projects">Projects</Link>
-				<Link to="/todo">Current Todo</Link>
+				<Link to="projects">Projects</Link>
+				<Link to="todo">Current Todo</Link>
 			</nav>
 
-			<Switch>
-				<Route exact path="/">
-					<Redirect to="/projects" />
-				</Route>
-				<Route path="/projects/:projectID">
-					<ShowProject />
-				</Route>
-				<Route path="/projects">
-					<Projects />
-				</Route>
-				<Route path="/todo">
-					<CurrentTodoRoute />
-				</Route>
-			</Switch>
+			<Routes>
+				<Route path="/" element={<Navigate to="/projects" />} />
+				<Route path="/projects/:projectID" element={<ShowProject />} />
+				<Route path="/projects" element={<Projects />} />
+				<Route path="/todo" element={<CurrentTodoRoute />} />
+			</Routes>
 		</div>
 	</Router>
 }
