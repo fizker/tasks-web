@@ -9,9 +9,10 @@ import { Project, Task, TaskStatus } from "../data.js"
 type Props = {
 	task: Task,
 	onSave: (Task) => void,
+	onDelete?: (Task) => void,
 	onCancel: () => void,
 }
-export function TaskEditView({ task, onSave, onCancel } : Props) : React.Node {
+export function TaskEditView({ task, onSave, onCancel, onDelete } : Props) : React.Node {
 	return <SectionView name="Create task">
 		<Form
 			record={task}
@@ -21,7 +22,10 @@ export function TaskEditView({ task, onSave, onCancel } : Props) : React.Node {
 			<FormTextView label="Description" field="description" isMultiLine />
 			<FormButtonRow
 				submitButton={{ text: "Save" }}
-				otherButton={{ text: "Cancel", onClick: onCancel }}
+				otherButtons={[
+					{ text: "Cancel", onClick: onCancel },
+					onDelete && { text: "Delete", onClick: () => onDelete(task) },
+				].filter(Boolean)}
 			/>
 		</Form>
 	</SectionView>

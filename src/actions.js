@@ -10,10 +10,28 @@ import type { State } from "./store.js"
 import { TaskStatus } from "./dtos.js"
 import { Project, Task, Todo } from "./data.js"
 
+// TODO: All HTTP functions should use this, not just delete
+async function parseJSONResponse<T>(response: Response) : Promise<?T> {
+	if(response.headers.get("content-type")?.startsWith("application/json")) {
+		const json: T = await response.json()
+		return json
+	} else {
+		return null
+	}
+}
+
 async function get<T>(path: string) : Promise<T> {
 	const response = await fetch(`${SERVER_URL}${path}`)
 	const json: T = await response.json()
 	return json
+}
+
+/// Note: This is called `del` because `delete` is a keyword.
+async function del<T>(path: string) : Promise<?T> {
+	const response = await fetch(`${SERVER_URL}${path}`, {
+		method: "DELETE",
+	})
+	return parseJSONResponse(response)
 }
 
 async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDTO) : Promise<ResponseDTO> {
@@ -86,11 +104,22 @@ type UpdateTaskDidSaveAction = {
 	type: "UPDATE_TASK_DID_SAVE",
 	task: Task,
 }
+type DeleteTaskWillSaveAction = {
+	type: "DELETE_TASK_WILL_SAVE",
+	task: Task,
+}
+type DeleteTaskDidSaveAction = {
+	type: "DELETE_TASK_DID_SAVE",
+	task: Task,
+}
 type TaskAction =
 	| CreateTaskWillSaveAction
 	| CreateTaskDidSaveAction
 	| UpdateTaskWillSaveAction
 	| UpdateTaskDidSaveAction
+	| DeleteTaskWillSaveAction
+	| DeleteTaskDidSaveAction
+
 
 export type Action =
 	| ReduxInitAction
@@ -204,6 +233,33 @@ export function createTask(projectID: string, task: Task) : AppThunkAction {
 			type: "CREATE_TASK_DID_SAVE",
 			temporaryID: tempID,
 			task: new Task(json),
+		})
+	}
+}
+
+export function deleteTask(task: Task) : AppThunkAction {
+	return async (dispatch, getState) => {
+		const taskID = task.get("id")
+		const projectID = task.get("project")
+
+		if(taskID == null) {
+			throw new Error("Task needs ID before it can be updated")
+		}
+
+		if(projectID == null) {
+			throw new Error("Task needs project ID before it can be updated")
+		}
+
+		dispatch({
+			type: "DELETE_TASK_WILL_SAVE",
+			task,
+		})
+
+		await del(`/projects/${projectID}/tasks/${taskID}`)
+
+		dispatch({
+			type: "DELETE_TASK_DID_SAVE",
+			task,
 		})
 	}
 }

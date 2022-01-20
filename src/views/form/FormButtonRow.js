@@ -9,17 +9,18 @@ type Button = {
 
 type Props = {
 	submitButton: { text: string },
-	otherButton: Button,
+	otherButtons: $ReadOnlyArray<Button>,
 }
-export function FormButtonRow({ submitButton, otherButton }: Props) : React.Node {
+export function FormButtonRow({ submitButton, otherButtons }: Props) : React.Node {
 	return <tr>
 		<td colSpan={2} style={{ textAlign: "right" }}>
-			{ otherButton && <button
+			{ otherButtons.map((otherButton, idx) => <button
+				key={idx}
 				type="button"
 				onClick={otherButton.onClick}
 			>
 				{otherButton.text}
-			</button>}
+			</button>)}
 			<button>{submitButton.text}</button>
 		</td>
 	</tr>

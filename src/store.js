@@ -19,12 +19,38 @@ const defaultState: State = {
 	projects: null,
 }
 
+function deleteTaskInProject(projects, task) {
+	const pentry = projects.findEntry(x => x.get("id") === task.get("project"))
+	if(pentry == null) return projects
+	const [ pidx, project ] = pentry
+	const orgTasks = project.get("tasks") ?? new List
+	const tidx = orgTasks.findIndex(x => x.get("id") === task.get("id"))
+
+	// Nothing to delete
+	if(tidx === -1) {
+		return projects
+	}
+
+	return projects.set(
+		pidx,
+		project.set(
+			"tasks",
+			orgTasks.delete(tidx),
+		),
+	)
+}
+
 function updateTaskInProject(projects, task, taskID = task.get("id")) {
 	const pentry = projects.findEntry(x => x.get("id") === task.get("project"))
 	if(pentry == null) return projects
 	const [ pidx, project ] = pentry
 	const orgTasks = project.get("tasks") ?? new List
 	const tidx = orgTasks.findIndex(x => x.get("id") === taskID)
+
+	// No task to update
+	if(tidx === -1) {
+		return projects
+	}
 
 	return projects.set(
 		pidx,
@@ -87,6 +113,12 @@ function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateTaskInProject(projects, action.task)),
+		}
+	case "DELETE_TASK_WILL_SAVE":
+	case "DELETE_TASK_DID_SAVE":
+		return {
+			...state,
+			projects: state.projects?.update(projects => deleteTaskInProject(projects, action.task)),
 		}
 	case "INIT":
 		// Don't do anything here. Redux does not always actually call it INIT

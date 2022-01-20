@@ -3,13 +3,13 @@
 import * as React from "react"
 import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 
-import { createTask, updateTask } from "../actions"
+import { createTask, deleteTask, updateTask } from "../actions"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
 import { Task } from "../data.js"
 
-function EditTask({ project, onSave, onCancel }) {
+function EditTask({ project, onSave, onCancel, onDelete }) {
 	const { taskID } = useParams()
 	const navigate = useNavigate()
 
@@ -23,6 +23,7 @@ function EditTask({ project, onSave, onCancel }) {
 		task={task}
 		onSave={onSave}
 		onCancel={onCancel}
+		onDelete={onDelete}
 	/>
 }
 
@@ -64,6 +65,10 @@ export function ShowProject() : React.Node {
 					project={project}
 					onSave={(task) => {
 						dispatch(updateTask(task))
+						navigate(".")
+					}}
+					onDelete={(task) => {
+						dispatch(deleteTask(task))
 						navigate(".")
 					}}
 					onCancel={() => { navigate(".") }}
