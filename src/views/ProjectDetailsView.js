@@ -1,6 +1,7 @@
 // @flow strict
 
 import * as React from "react"
+import { Link } from "react-router-dom"
 
 import { MarkdownTextView } from "../views.js"
 
@@ -33,14 +34,24 @@ function sortTask(x: Task, y: Task) : number {
 
 export function ProjectDetailsView({ project }: Props) : React.Node {
 	const p = project
+	const projectID = p.get("id")
+	if(projectID == null) {
+		throw new Error("Cannot show details for unsaved project")
+	}
 	const tasks = p.get("tasks")
 	return <>
 		<MarkdownTextView>{p.get("description")}</MarkdownTextView>
 		{tasks == null ? null : <>
-			<hr />
-			<h2>Tasks</h2>
+			<header>
+				<h2>Tasks</h2>
+				<Link to="create-task">Create new</Link>
+			</header>
 			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div key={t.get("id")}>
-				<h3>{t.get("name")}</h3>
+				<hr/>
+				<header>
+					<h3>{t.get("name")}</h3>
+					<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
+				</header>
 				<MarkdownTextView>{t.get("description")}</MarkdownTextView>
 			</div>)}
 		</>}
