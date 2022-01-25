@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
 
-import { MarkdownTextView } from "../views.js"
+import { DropTarget, MarkdownTextView } from "../views.js"
 
 import { Project, Task, TaskStatus } from "../data.js"
 
@@ -32,7 +32,26 @@ function sortTask(x: Task, y: Task) : number {
 	return xSort - ySort
 }
 
+function onDragStart(event, task: Task) {
+	const id = task.get("id") ?? ""
+	event.dataTransfer.setData("text/plain", id)
+	// This is a hack to allow the drag-over handler to access the id
+	event.dataTransfer.setData("application/id-" + id, "true")
+	event.dataTransfer.effectAllowed = "move"
+}
+function onDrop(event, task: Task, dropTarget: "top"|"bottom") {
+	event.preventDefault()
+	const idOfDraggedElement = event.dataTransfer?.getData("text/plain")
+	console.log("onDrop", {
+		targetName: task.get("name"),
+		target: dropTarget === "top" ? "before" : "after",
+		idOfDraggedElement,
+	})
+}
+
 export function ProjectDetailsView({ project }: Props) : React.Node {
+	const [ isDragging, setIsDragging ] = React.useState(null)
+
 	const p = project
 	const projectID = p.get("id")
 	if(projectID == null) {
@@ -48,11 +67,27 @@ export function ProjectDetailsView({ project }: Props) : React.Node {
 			</header>
 			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div key={t.get("id")}>
 				<hr/>
-				<header>
-					<h3>{t.get("name")}</h3>
-					<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
-				</header>
-				<MarkdownTextView>{t.get("description")}</MarkdownTextView>
+				<article
+					draggable
+					onDragStart={e => {
+						setIsDragging(t.get("id"))
+						onDragStart(e, t)
+					}}
+					onDragEnd={e => {
+						setIsDragging(null)
+					}}
+					style={{ position: "relative" }}
+				>
+					{ isDragging != null && isDragging !== t.get("id") && <DropTarget
+						onDrop={(event, target) => onDrop(event, t, target)}
+					/> }
+
+					<header>
+						<h3>{t.get("name")}</h3>
+						<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
+					</header>
+					<MarkdownTextView>{t.get("description")}</MarkdownTextView>
+				</article>
 			</div>)}
 		</>}
 	</>
