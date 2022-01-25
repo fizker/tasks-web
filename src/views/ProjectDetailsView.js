@@ -3,12 +3,13 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
 
-import { DropTarget, MarkdownTextView } from "../views.js"
+import { DropTarget, DropTargetVerticalDir, MarkdownTextView } from "../views.js"
 
 import { Project, Task, TaskStatus } from "../data.js"
 
 type Props = {
 	project: Project,
+	onReorderTask: (Task, number) => void,
 }
 
 function sortTask(x: Task, y: Task) : number {
@@ -49,7 +50,7 @@ function onDrop(event, task: Task, dropTarget: "top"|"bottom") {
 	})
 }
 
-export function ProjectDetailsView({ project }: Props) : React.Node {
+export function ProjectDetailsView({ project, onReorderTask }: Props) : React.Node {
 	const [ isDragging, setIsDragging ] = React.useState(null)
 
 	const p = project
@@ -79,7 +80,22 @@ export function ProjectDetailsView({ project }: Props) : React.Node {
 					style={{ position: "relative" }}
 				>
 					{ isDragging != null && isDragging !== t.get("id") && <DropTarget
-						onDrop={(event, target) => onDrop(event, t, target)}
+						onDrop={(event, target) => {
+							const unmodifiedOrder = t.get("sortOrder") ?? 0
+							let order: number
+							switch(target) {
+							case DropTargetVerticalDir.Bottom:
+								order = unmodifiedOrder
+								break
+							case DropTargetVerticalDir.Top:
+								order = unmodifiedOrder
+								break
+							}
+							const taskID = event.dataTransfer?.getData("text/plain")
+							const taskToChange = tasks.find(x => x.get("id") === taskID)
+							// $FlowFixMe[incompatible-call] the enum is not correctly exhaustive for detecting that order is not uninitialized
+							onReorderTask(taskToChange, order)
+						}}
 					/> }
 
 					<header>

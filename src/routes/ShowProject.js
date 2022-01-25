@@ -74,7 +74,15 @@ export function ShowProject() : React.Node {
 					onCancel={() => { navigate(".") }}
 				/>
 			} />
-			<Route path="/" element={<ProjectDetailsView project={project} />} />
+			<Route
+				path="/"
+				element={<ProjectDetailsView
+					project={project}
+					onReorderTask={(task, sortOrder) => {
+						dispatch(updateTask(task.set("sortOrder", sortOrder)))
+					}}
+				/>}
+			/>
 		</Routes>
 	</Page>
 }
