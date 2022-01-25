@@ -10,6 +10,7 @@ all=error
 
 [options]
 sharedmemory.heap_size=3221225472
+enums=true
 exact_by_default=true
 
 [strict]

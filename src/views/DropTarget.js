@@ -10,10 +10,14 @@ const dropTargetStyle = {
 	top: 0,
 }
 
+export enum DropTargetVerticalDir {
+	Top, Bottom
+}
+
 type Props = {
 	isValidTarget?: (event: DragEvent) => boolean,
 	onDragOver?: (event: DragEvent) => void,
-	onDrop: (event: DragEvent, target: "top"|"bottom") => void,
+	onDrop: (event: DragEvent, target: DropTargetVerticalDir) => void,
 }
 
 export function DropTarget({ isValidTarget, onDragOver, onDrop }: Props) : React.Node {
@@ -46,7 +50,7 @@ export function DropTarget({ isValidTarget, onDragOver, onDrop }: Props) : React
 			onDragLeave={e => {
 				e.currentTarget.style.background = "transparent"
 			}}
-			onDrop={e => onDrop(e, "top")}
+			onDrop={e => onDrop(e, DropTargetVerticalDir.Top)}
 		>
 		</div>
 		<div
@@ -60,7 +64,7 @@ export function DropTarget({ isValidTarget, onDragOver, onDrop }: Props) : React
 			onDragLeave={e => {
 				e.currentTarget.style.background = "transparent"
 			}}
-			onDrop={e => onDrop(e, "bottom")}
+			onDrop={e => onDrop(e, DropTargetVerticalDir.Bottom)}
 		>
 		</div>
 	</div>

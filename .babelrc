@@ -3,7 +3,8 @@
 		"safari": "14"
 	},
 	"plugins": [
-		"@babel/plugin-proposal-class-properties"
+		"@babel/plugin-proposal-class-properties",
+		"babel-plugin-transform-flow-enums"
 	],
 	"presets": [
 		"@babel/preset-flow",
