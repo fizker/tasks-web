@@ -10,6 +10,7 @@
     "flow-typed": "flow-typed install"
   },
   "author": "",
+  "type": "module",
   "license": "WTFPL",
   "dependencies": {
     "@babel/core": "^7.13.16",
