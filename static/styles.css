@@ -5,6 +5,10 @@
 	margin-left: 1rem;
 }
 
+[draggable] {
+	cursor: grab;
+}
+
 #main-menu a:first-child {
 	margin-left: 0;
 }
@@ -19,4 +23,20 @@
 
 .action-button-list button:first-child {
 	margin-left: 0;
+}
+
+.project-list__item {
+	padding: 10px 0;
+}
+
+.project-list__item h3 {
+	margin-top: 0;
+}
+
+.project-list__item--wrapper {
+	border-top: 1px solid black;
+}
+
+.project-list__item--wrapper:first-of-type {
+	margin-top: 20px;
 }

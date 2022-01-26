@@ -21,6 +21,9 @@ type Props = {
 }
 
 export function DropTarget({ isValidTarget, onDragOver, onDrop }: Props) : React.Node {
+	const [ isHoveringTop, setIsHoveringTop ] = React.useState(false)
+	const [ isHoveringBottom, setIsHoveringBottom ] = React.useState(false)
+
 	return <div
 		style={{
 			...dropTargetStyle,
@@ -42,13 +45,14 @@ export function DropTarget({ isValidTarget, onDragOver, onDrop }: Props) : React
 		<div
 			style={{
 				...dropTargetStyle,
+				background: isHoveringTop ? createGradient(DropTargetVerticalDir.Top) : "transparent",
 				bottom: "50%",
 			}}
 			onDragEnter={e => {
-				e.currentTarget.style.background = "blue"
+				setIsHoveringTop(true)
 			}}
 			onDragLeave={e => {
-				e.currentTarget.style.background = "transparent"
+				setIsHoveringTop(false)
 			}}
 			onDrop={e => onDrop(e, DropTargetVerticalDir.Top)}
 		>
@@ -56,16 +60,21 @@ export function DropTarget({ isValidTarget, onDragOver, onDrop }: Props) : React
 		<div
 			style={{
 				...dropTargetStyle,
+				background: isHoveringBottom ? createGradient(DropTargetVerticalDir.Bottom) : "transparent",
 				top: "50%",
 			}}
 			onDragEnter={e => {
-				e.currentTarget.style.background = "blue"
+				setIsHoveringBottom(true)
 			}}
 			onDragLeave={e => {
-				e.currentTarget.style.background = "transparent"
+				setIsHoveringBottom(false)
 			}}
 			onDrop={e => onDrop(e, DropTargetVerticalDir.Bottom)}
 		>
 		</div>
 	</div>
+}
+
+function createGradient(dir: DropTargetVerticalDir) : string {
+	return `linear-gradient(${dir === DropTargetVerticalDir.Top ? "180" : "0"}deg, #94e6ff, transparent)`
 }

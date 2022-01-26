@@ -66,17 +66,12 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 				<h2>Tasks</h2>
 				<Link to="create-task">Create new</Link>
 			</header>
-			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div key={t.get("id")}>
-				<hr/>
+			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div
+				key={t.get("id") ?? "unsaved"}
+				className="project-list__item--wrapper"
+			>
 				<article
-					draggable
-					onDragStart={e => {
-						setIsDragging(t.get("id"))
-						onDragStart(e, t)
-					}}
-					onDragEnd={e => {
-						setIsDragging(null)
-					}}
+					className="project-list__item"
 					style={{ position: "relative" }}
 				>
 					{ isDragging != null && isDragging !== t.get("id") && <DropTarget
@@ -99,10 +94,23 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 					/> }
 
 					<header>
-						<h3>{t.get("name")}</h3>
+						<h3
+							draggable
+							onDragStart={e => {
+								setIsDragging(t.get("id"))
+								onDragStart(e, t)
+							}}
+							onDragEnd={e => {
+								setIsDragging(null)
+							}}
+						>
+							{t.get("name")}
+						</h3>
 						<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
 					</header>
+					{ t.get("description") &&
 					<MarkdownTextView>{t.get("description")}</MarkdownTextView>
+					}
 				</article>
 			</div>)}
 		</>}
