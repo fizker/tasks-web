@@ -85,7 +85,7 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 							let order: number
 							switch(target) {
 							case DropTargetVerticalDir.Bottom:
-								order = unmodifiedOrder
+								order = unmodifiedOrder + 1
 								break
 							case DropTargetVerticalDir.Top:
 								order = unmodifiedOrder
