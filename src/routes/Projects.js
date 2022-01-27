@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { useAppSelector as useSelector } from "../store"
+import { useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
 import { ProjectList } from "../views/ProjectList.js"
 import { LoadingDataView } from "../views.js"

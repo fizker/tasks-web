@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
 
-import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store"
+import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { fetchCurrentTodo, changeCurrentTodo } from "../actions.js"
 
 import { Page } from "./Page.js"

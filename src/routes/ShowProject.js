@@ -3,8 +3,8 @@
 import * as React from "react"
 import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 
-import { createTask, deleteTask, updateTask } from "../actions"
-import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store"
+import { createTask, deleteTask, updateTask } from "../actions.js"
+import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
 import { Task } from "../data.js"
@@ -74,7 +74,15 @@ export function ShowProject() : React.Node {
 					onCancel={() => { navigate(".") }}
 				/>
 			} />
-			<Route path="/" element={<ProjectDetailsView project={project} />} />
+			<Route
+				path="/"
+				element={<ProjectDetailsView
+					project={project}
+					onReorderTask={(task) => {
+						dispatch(updateTask(task))
+					}}
+				/>}
+			/>
 		</Routes>
 	</Page>
 }

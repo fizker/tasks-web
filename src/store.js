@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
-import { Project, Todo } from "./data.js"
+import { Project, Task, Todo } from "./data.js"
 
 import type { Store, DispatchAPI } from "redux"
 import type { Action, DispatchAction } from "./actions.js"
@@ -44,8 +44,10 @@ function updateTaskInProject(projects, task, taskID = task.get("id")) {
 	const pentry = projects.findEntry(x => x.get("id") === task.get("project"))
 	if(pentry == null) return projects
 	const [ pidx, project ] = pentry
-	const orgTasks = project.get("tasks") ?? new List
-	const tidx = orgTasks.findIndex(x => x.get("id") === taskID)
+	let tasks = project.get("tasks") ?? new List
+
+	tasks = updateTaskSortOrder(tasks, task)
+	const tidx = tasks.findIndex(x => x.get("id") === taskID)
 
 	// No task to update
 	if(tidx === -1) {
@@ -56,15 +58,62 @@ function updateTaskInProject(projects, task, taskID = task.get("id")) {
 		pidx,
 		project.set(
 			"tasks",
-			orgTasks.set(
-				tidx,
-				task,
-			),
+			tasks,
 		),
 	)
 }
 
-function reducer(state?: State = defaultState, action: Action) : State {
+function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
+	const taskID = task.get("id")
+
+	const entry = tasks.findEntry(x => x.get("id") === taskID)
+
+	// No task to update
+	if(entry == null) {
+		return tasks
+	}
+
+	const [ idx, orgTask ] = entry
+
+	if(orgTask.get("sortOrder") == task.get("sortOrder")) {
+		return tasks.set(idx, task)
+	}
+
+	// reorder other tasks
+	const oldSort = orgTask.get("sortOrder") ?? 0
+	const newSort = task.get("sortOrder") ?? 0
+
+	const isMovingDown = oldSort < newSort
+	const direction = isMovingDown ? -1 : 1
+
+	const minSort = Math.min(oldSort, newSort)
+	const maxSort = Math.max(oldSort, newSort)
+
+	let updatedTasks = tasks
+
+	const size = tasks.size
+	for(let i = 0; i < size; i++) {
+		const t = tasks.get(i)
+		if(t == null) throw new Error("Unexpectedly found nothing at index")
+
+		if(t.get("id") === taskID) {
+			updatedTasks = updatedTasks.set(i, task)
+			continue
+		}
+
+		const s = t.get("sortOrder") ?? 0
+
+		if(s < minSort || s > maxSort) {
+			continue
+		}
+
+		updatedTasks = updatedTasks.set(i, t.set("sortOrder", s + direction))
+	}
+
+	return updatedTasks
+}
+
+export function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
 	case "PROJECTS_WILL_LOAD":
 		return {

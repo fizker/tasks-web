@@ -3,12 +3,13 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
 
-import { MarkdownTextView } from "../views.js"
-
-import { Project, Task, TaskStatus } from "../data.js"
+import { Project, ReorderPosition, Task, TaskStatus } from "../data.js"
+import { reorderTask } from "../transforms.js"
+import { DropTarget, DropTargetVerticalDir, MarkdownTextView } from "../views.js"
 
 type Props = {
 	project: Project,
+	onReorderTask: (Task) => void,
 }
 
 function sortTask(x: Task, y: Task) : number {
@@ -32,7 +33,26 @@ function sortTask(x: Task, y: Task) : number {
 	return xSort - ySort
 }
 
-export function ProjectDetailsView({ project }: Props) : React.Node {
+function onDragStart(event, task: Task) {
+	const id = task.get("id") ?? ""
+	event.dataTransfer.setData("text/plain", id)
+	// This is a hack to allow the drag-over handler to access the id
+	event.dataTransfer.setData("application/id-" + id, "true")
+	event.dataTransfer.effectAllowed = "move"
+}
+function onDrop(event, task: Task, dropTarget: "top"|"bottom") {
+	event.preventDefault()
+	const idOfDraggedElement = event.dataTransfer?.getData("text/plain")
+	console.log("onDrop", {
+		targetName: task.get("name"),
+		target: dropTarget === "top" ? "before" : "after",
+		idOfDraggedElement,
+	})
+}
+
+export function ProjectDetailsView({ project, onReorderTask }: Props) : React.Node {
+	const [ isDragging, setIsDragging ] = React.useState(null)
+
 	const p = project
 	const projectID = p.get("id")
 	if(projectID == null) {
@@ -46,13 +66,56 @@ export function ProjectDetailsView({ project }: Props) : React.Node {
 				<h2>Tasks</h2>
 				<Link to="create-task">Create new</Link>
 			</header>
-			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div key={t.get("id")}>
-				<hr/>
-				<header>
-					<h3>{t.get("name")}</h3>
-					<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
-				</header>
-				<MarkdownTextView>{t.get("description")}</MarkdownTextView>
+			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div
+				key={t.get("id") ?? "unsaved"}
+				className="project-list__item--wrapper"
+			>
+				<article
+					className="project-list__item"
+					style={{ position: "relative" }}
+				>
+					{ isDragging != null && isDragging !== t.get("id") && <DropTarget
+						onDrop={(event, target) => {
+							event.preventDefault()
+
+							// $FlowFixMe[incompatible-type] the enum is not correctly exhaustive for detecting that order is not uninitialized
+							let dir: ReorderPosition
+							switch(target) {
+							case DropTargetVerticalDir.Top:
+								dir = ReorderPosition.Before
+								break
+							case DropTargetVerticalDir.Bottom:
+								dir = ReorderPosition.After
+								break
+							}
+							if(dir == null) throw new Error
+
+							const taskID = event.dataTransfer?.getData("text/plain")
+							const taskToChange = tasks.find(x => x.get("id") === taskID)
+
+							onReorderTask(reorderTask(taskToChange, t, dir))
+						}}
+					/> }
+
+					<header>
+						<h3
+							draggable
+							onDragStart={e => {
+								setIsDragging(t.get("id"))
+								onDragStart(e, t)
+							}}
+							onDragEnd={e => {
+								setIsDragging(null)
+							}}
+						>
+							{t.get("name")}
+						</h3>
+						<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
+					</header>
+					{ t.get("description") &&
+					<MarkdownTextView>{t.get("description")}</MarkdownTextView>
+					}
+				</article>
 			</div>)}
 		</>}
 	</>
