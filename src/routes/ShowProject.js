@@ -78,8 +78,8 @@ export function ShowProject() : React.Node {
 				path="/"
 				element={<ProjectDetailsView
 					project={project}
-					onReorderTask={(task, sortOrder) => {
-						dispatch(updateTask(task.set("sortOrder", sortOrder)))
+					onReorderTask={(task) => {
+						dispatch(updateTask(task))
 					}}
 				/>}
 			/>
