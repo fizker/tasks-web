@@ -7,6 +7,10 @@ import type { ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
 
 export { ProjectStatus, TaskStatus } from "./dtos.js"
 
+export enum ReorderPosition {
+	Before, After
+}
+
 const defaultTask: TaskDTO = {
 	id: undefined,
 	name: "",
