@@ -66,7 +66,10 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 				<h2>Tasks</h2>
 				<Link to="create-task">Create new</Link>
 			</header>
-			{tasks.filter(x => x.get("status") !== TaskStatus.done).sort(sortTask).map(t => <div
+			{tasks
+			.filter(x => x.get("status") !== TaskStatus.done)
+			.sort(sortTask)
+			.map(t => <div
 				key={t.get("id") ?? "unsaved"}
 				className="project-list__item--wrapper"
 			>

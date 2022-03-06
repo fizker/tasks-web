@@ -4,8 +4,7 @@ import * as React from "react"
 
 import { useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
-import { ProjectList } from "../views/ProjectList.js"
-import { LoadingDataView } from "../views.js"
+import { LoadingDataView, ProjectSummaryView } from "../views.js"
 
 export function Projects() : React.Node {
 	const projects = useSelector(x => x.projects)
@@ -15,6 +14,8 @@ export function Projects() : React.Node {
 	}
 
 	return <Page name="All projects">
-		<ProjectList projects={projects} />
+		{projects.map(project =>
+			<ProjectSummaryView project={project} />
+		)}
 	</Page>
 }
