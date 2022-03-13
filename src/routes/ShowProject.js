@@ -4,18 +4,15 @@ import * as React from "react"
 import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 
 import {
-	createProject, deleteProject, updateProject,
 	createTask, deleteTask, updateTask,
 } from "../actions.js"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
 import { Task } from "../data.js"
-import { ProjectEditView } from "../views/ProjectEditView";
 
 function EditTask({ project, onSave, onCancel, onDelete }) {
 	const { taskID } = useParams()
-	const navigate = useNavigate()
 
 	const task = taskID == null ? null : project.get("tasks")?.find(x => x.get("id") === taskID)
 
@@ -73,20 +70,6 @@ export function ShowProject() : React.Node {
 					}}
 					onDelete={(task) => {
 						dispatch(deleteTask(task))
-						navigate(".")
-					}}
-					onCancel={() => { navigate(".") }}
-				/>
-			} />
-			<Route path="/edit" element={
-				<ProjectEditView
-					project={project}
-					onSave={(project) => {
-						dispatch(updateProject(project))
-						navigate(".")
-					}}
-					onDelete={(project) => {
-						dispatch(deleteProject(project))
 						navigate(".")
 					}}
 					onCancel={() => { navigate(".") }}
