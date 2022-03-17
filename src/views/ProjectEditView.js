@@ -14,20 +14,18 @@ type Props = {
 }
 
 export function ProjectEditView({ project, onSave, onCancel, onDelete }: Props) : React.Node {
-	return <SectionView name={<>Edit project: {project.get("name")}</>}>
-		<Form
-			record={project}
-			onSubmit={onSave}
-		>
-			<FormTextView label="Name" field="name" />
-			<FormTextView label="Description" field="description" isMultiLine />
-			<FormButtonRow
-				submitButton={{ text: "Save" }}
-				otherButtons={[
-					{ text: "Cancel", onClick: onCancel },
-					onDelete && { text: "Delete", onClick: () => onDelete(project) },
-				].filter(Boolean)}
-			/>
-		</Form>
-	</SectionView>
+	return <Form
+		record={project}
+		onSubmit={onSave}
+	>
+		<FormTextView label="Name" field="name" />
+		<FormTextView label="Description" field="description" isMultiLine />
+		<FormButtonRow
+			submitButton={{ text: "Save" }}
+			otherButtons={[
+				{ text: "Cancel", onClick: onCancel },
+				onDelete && { text: "Delete", onClick: () => onDelete(project) },
+			].filter(Boolean)}
+		/>
+	</Form>
 }
