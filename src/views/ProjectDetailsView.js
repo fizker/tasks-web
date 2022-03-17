@@ -60,7 +60,19 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 	}
 	const tasks = p.get("tasks")
 	return <>
-		<MarkdownTextView>{p.get("description")}</MarkdownTextView>
+		<div style={{ position: "relative" }}>
+			<Link
+				style={{
+					position: "absolute",
+					top: 0,
+					right: 0,
+				}}
+				to="edit"
+			>
+				Edit
+			</Link>
+			<MarkdownTextView>{p.get("description")}</MarkdownTextView>
+		</div>
 		{tasks == null ? null : <>
 			<header>
 				<h2>Tasks</h2>

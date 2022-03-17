@@ -1,6 +1,9 @@
 // @flow strict
 
 import * as React from "react"
+import {
+	Link,
+} from "react-router-dom"
 
 import { useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
@@ -14,6 +17,7 @@ export function Projects() : React.Node {
 	}
 
 	return <Page name="All projects">
+		<Link to="new">New</Link>
 		{projects.map(project =>
 			<ProjectSummaryView project={project} />
 		)}
