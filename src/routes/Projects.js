@@ -19,7 +19,7 @@ export function Projects() : React.Node {
 	return <Page name="All projects">
 		<Link to="new">New</Link>
 		{projects.map(project =>
-			<ProjectSummaryView project={project} />
+			<ProjectSummaryView key={project.get("id")} project={project} />
 		)}
 	</Page>
 }
