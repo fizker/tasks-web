@@ -19,7 +19,17 @@ const defaultState: State = {
 	projects: null,
 }
 
-function deleteTaskInProject(projects, task) {
+function updateProject(projects: List<Project>, project: Project, projectID = project.get("id")) {
+	const pidx = projects.findIndex(x => x.get("id") === projectID)
+
+	if(pidx === -1) {
+		return projects
+	}
+
+	return projects.set(pidx, project)
+}
+
+function deleteTaskInProject(projects: List<Project>, task: Task) {
 	const pentry = projects.findEntry(x => x.get("id") === task.get("project"))
 	if(pentry == null) return projects
 	const [ pidx, project ] = pentry
@@ -40,7 +50,7 @@ function deleteTaskInProject(projects, task) {
 	)
 }
 
-function updateTaskInProject(projects, task, taskID = task.get("id")) {
+function updateTaskInProject(projects: List<Project>, task: Task, taskID = task.get("id")) {
 	const pentry = projects.findEntry(x => x.get("id") === task.get("project"))
 	if(pentry == null) return projects
 	const [ pidx, project ] = pentry
@@ -134,6 +144,30 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			currentTodo: action.todo,
+		}
+	case "CREATE_PROJECT_WILL_SAVE":
+		return {
+			...state,
+			projects: state.projects?.update(projects => {
+				return projects.push(action.project)
+			}),
+		}
+	case "CREATE_PROJECT_DID_SAVE":
+		return {
+			...state,
+			projects: state.projects?.update(projects => updateProject(projects, action.project, action.temporaryID)),
+		}
+	case "UPDATE_PROJECT_WILL_SAVE":
+	case "UPDATE_PROJECT_DID_SAVE":
+		return {
+			...state,
+			projects: state.projects?.update(projects => updateProject(projects, action.project)),
+		}
+	case "DELETE_PROJECT_WILL_SAVE":
+	case "DELETE_PROJECT_DID_SAVE":
+		return {
+			...state,
+			projects: state.projects?.filter(x => x.get("id") === action.project.get("id")),
 		}
 	case "CREATE_TASK_WILL_SAVE":
 		return {

@@ -69,9 +69,41 @@ type ProjectsDidLoadAction = {
 	type: "PROJECTS_DID_LOAD",
 	projects: $ReadOnlyArray<Project>,
 }
+type CreateProjectWillSaveAction = {
+	type: "CREATE_PROJECT_WILL_SAVE",
+	project: Project,
+	temporaryID: UUID,
+}
+type CreateProjectDidSaveAction = {
+	type: "CREATE_PROJECT_DID_SAVE",
+	project: Project,
+	temporaryID: UUID,
+}
+type UpdateProjectWillSaveAction = {
+	type: "UPDATE_PROJECT_WILL_SAVE",
+	project: Project,
+}
+type UpdateProjectDidSaveAction = {
+	type: "UPDATE_PROJECT_DID_SAVE",
+	project: Project,
+}
+type DeleteProjectWillSaveAction = {
+	type: "DELETE_PROJECT_WILL_SAVE",
+	project: Project,
+}
+type DeleteProjectDidSaveAction = {
+	type: "DELETE_PROJECT_DID_SAVE",
+	project: Project,
+}
 type ProjectsAction =
 	| ProjectsWillLoadAction
 	| ProjectsDidLoadAction
+	| CreateProjectWillSaveAction
+	| CreateProjectDidSaveAction
+	| UpdateProjectWillSaveAction
+	| UpdateProjectDidSaveAction
+	| DeleteProjectWillSaveAction
+	| DeleteProjectDidSaveAction
 
 type CurrentTodoWillLoadAction = {
 	type: "CURRENT_TODO_WILL_LOAD",
@@ -205,6 +237,71 @@ export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppTh
 	}
 }
 
+export function createProject(project: Project) : AppThunkAction {
+	return async (dispatch, getState) => {
+		const tempID = "temp-id"
+
+		dispatch({
+			type: "CREATE_PROJECT_WILL_SAVE",
+			temporaryID: tempID,
+			project: project
+				.set("id", tempID),
+		})
+
+		const json: ProjectDTO = await post(`/projects`, project.toJSON())
+
+		dispatch({
+			type: "CREATE_PROJECT_DID_SAVE",
+			temporaryID: tempID,
+			project: parseProject(json),
+		})
+	}
+}
+
+export function deleteProject(project: Project) : AppThunkAction {
+	return async (dispatch, getState) => {
+		const projectID = project.get("id")
+
+		if(projectID == null) {
+			throw new Error("Project needs ID before it can be deleted")
+		}
+
+		dispatch({
+			type: "DELETE_PROJECT_WILL_SAVE",
+			project,
+		})
+
+		await del(`/projects/${projectID}`)
+
+		dispatch({
+			type: "DELETE_PROJECT_DID_SAVE",
+			project,
+		})
+	}
+}
+
+export function updateProject(project: Project) : AppThunkAction {
+	return async (dispatch, getState) => {
+		const projectID = project.get("id")
+
+		if(projectID == null) {
+			throw new Error("Project needs ID before it can be updated")
+		}
+
+		dispatch({
+			type: "UPDATE_PROJECT_WILL_SAVE",
+			project,
+		})
+
+		const json: ProjectDTO = await put(`/projects/${projectID}`, project.toJSON())
+
+		dispatch({
+			type: "UPDATE_PROJECT_DID_SAVE",
+			project: parseProject(json),
+		})
+	}
+}
+
 export function createTask(projectID: string, task: Task) : AppThunkAction {
 	return async (dispatch, getState) => {
 		const project = getState().projects?.find(x => x.get("id") === projectID)
@@ -243,11 +340,11 @@ export function deleteTask(task: Task) : AppThunkAction {
 		const projectID = task.get("project")
 
 		if(taskID == null) {
-			throw new Error("Task needs ID before it can be updated")
+			throw new Error("Task needs ID before it can be deleted")
 		}
 
 		if(projectID == null) {
-			throw new Error("Task needs project ID before it can be updated")
+			throw new Error("Task needs project ID before it can be deleted")
 		}
 
 		dispatch({

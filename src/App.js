@@ -9,9 +9,12 @@ import {
 	Routes,
 } from "react-router-dom"
 
-import { CurrentTodoRoute } from "./routes/CurrentTodoRoute.js"
-import { Projects } from "./routes/Projects.js"
-import { ShowProject } from "./routes/ShowProject.js"
+import {
+	CurrentTodoRoute,
+	EditProject, EditProjectType,
+	Projects,
+	ShowProject,
+} from "./routes.js"
 
 export function App() : React.Node {
 	return <Router>
@@ -23,8 +26,10 @@ export function App() : React.Node {
 
 			<Routes>
 				<Route path="/" element={<Navigate to="/projects" />} />
-				<Route path="/projects/:projectID/*" element={<ShowProject />} />
 				<Route path="/projects" element={<Projects />} />
+				<Route path="/projects/new" element={<EditProject type={EditProjectType.New} />} />
+				<Route path="/projects/:projectID/edit" element={<EditProject type={EditProjectType.Edit} />} />
+				<Route path="/projects/:projectID/*" element={<ShowProject />} />
 				<Route path="/todo" element={<CurrentTodoRoute />} />
 			</Routes>
 		</div>

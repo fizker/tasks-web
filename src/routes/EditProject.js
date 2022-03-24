@@ -1,0 +1,73 @@
+// @flow strict
+
+import * as React from "react"
+import { useNavigate, useParams } from "react-router-dom"
+
+import {
+	createProject, deleteProject, updateProject,
+} from "../actions.js"
+import { Project } from "../data.js"
+import { Page } from "./Page.js"
+import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
+import { LoadingDataView, ProjectEditView } from "../views.js"
+
+export enum EditProjectType {
+	New, Edit
+}
+
+type Props = {
+	type: EditProjectType,
+}
+
+export function EditProject({ type }: Props) : React.Node {
+	const dispatch = useDispatch()
+	const { projectID } = useParams()
+	const projects = useSelector(x => x.projects)
+	const navigate = useNavigate()
+
+	let title: string
+	let project: Project
+	let onDelete: void | (Project) => void
+
+	switch(type) {
+	case EditProjectType.New:
+		title = "Create project"
+		project = new Project()
+		break
+	case EditProjectType.Edit:
+		if(projects == null) return <LoadingDataView />
+
+		const p = projects.find(x => x.get("id") === projectID)
+		if(p == null) {
+			// TODO: handle 404
+			return null
+		}
+		project = p
+		title = `Edit project: ${project.get("name")}`
+		onDelete = (project) => {
+			dispatch(deleteProject(project))
+			navigate(".")
+		}
+		break
+	}
+	if(title == null || project == null) throw new Error
+
+	return <Page name={title}>
+		<ProjectEditView
+			project={project}
+			onSave={(project) => {
+				switch(type) {
+				case EditProjectType.New:
+					dispatch(createProject(project))
+					break
+				case EditProjectType.Edit:
+					dispatch(updateProject(project))
+					break
+				}
+				navigate(".")
+			}}
+			onDelete={onDelete}
+			onCancel={() => { navigate(".") }}
+		/>
+	</Page>
+}

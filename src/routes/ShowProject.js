@@ -3,7 +3,9 @@
 import * as React from "react"
 import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 
-import { createTask, deleteTask, updateTask } from "../actions.js"
+import {
+	createTask, deleteTask, updateTask,
+} from "../actions.js"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
@@ -11,7 +13,6 @@ import { Task } from "../data.js"
 
 function EditTask({ project, onSave, onCancel, onDelete }) {
 	const { taskID } = useParams()
-	const navigate = useNavigate()
 
 	const task = taskID == null ? null : project.get("tasks")?.find(x => x.get("id") === taskID)
 

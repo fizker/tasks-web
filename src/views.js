@@ -7,3 +7,5 @@ export { MarkdownTextView } from "./views/MarkdownTextView.js"
 export { SectionView } from "./views/SectionView.js"
 export { TaskEditView } from "./views/TaskEditView.js"
 export { ProjectDetailsView } from "./views/ProjectDetailsView.js"
+export { ProjectEditView } from "./views/ProjectEditView.js";
+export { ProjectSummaryView } from "./views/ProjectSummaryView.js"
