@@ -169,7 +169,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 	case "DELETE_PROJECT_DID_SAVE":
 		return {
 			...state,
-			projects: state.projects?.filter(x => x.get("id") === action.project.get("id")),
+			projects: state.projects?.filter(x => x.get("id") !== action.project.get("id")),
 		}
 	case "CREATE_TASK_WILL_SAVE":
 		return {
