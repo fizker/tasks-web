@@ -7,6 +7,7 @@ import {
 	Navigate,
 	Route,
 	Routes,
+	useLocation,
 } from "react-router-dom"
 
 import {
@@ -14,10 +15,18 @@ import {
 	EditProject, EditProjectType,
 	Projects,
 	ShowProject,
+	setTitle,
 } from "./routes.js"
+
+function ResetTitle() {
+	const location = useLocation()
+	setTitle(null)
+	return null
+}
 
 export function App() : React.Node {
 	return <Router>
+		<ResetTitle />
 		<div>
 			<nav id="main-menu">
 				<Link to="projects">Projects</Link>

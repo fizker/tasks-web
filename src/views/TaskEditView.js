@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { setTitle } from "../routes.js"
 import { SectionView } from "./SectionView.js"
 import { Form, FormTextView, FormButtonRow } from "./form.js"
 import { Project, Task, TaskStatus } from "../data.js"
@@ -13,7 +14,13 @@ type Props = {
 	onCancel: () => void,
 }
 export function TaskEditView({ task, onSave, onCancel, onDelete } : Props) : React.Node {
-	return <SectionView name="Create task">
+	const isNew = task.get("id") == null
+
+	const title = isNew ? "Create task" : `Edit task: ${task.get("name") ?? ""}`
+
+	setTitle(title)
+
+	return <SectionView name={title}>
 		<Form
 			record={task}
 			onSubmit={onSave}
