@@ -17,11 +17,3 @@ export function useRelativeNavigate() : (string) => void {
 		}
 	}
 }
-
-export function setTitle(title: ?string) {
-	if(title != null) {
-		document.title = `${title} - ${document.title}`
-	} else {
-		document.title = "Tasks"
-	}
-}

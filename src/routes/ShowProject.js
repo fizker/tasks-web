@@ -6,7 +6,6 @@ import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 import {
 	createTask, deleteTask, updateTask,
 } from "../actions.js"
-import { setTitle } from "../routes.js"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectDetailsView, TaskEditView } from "../views.js"
@@ -47,8 +46,6 @@ export function ShowProject() : React.Node {
 	if(project == null) {
 		return <div>Project not found</div>
 	}
-
-	setTitle(project.get("name"))
 
 	return <Page name={project.get("name")}>
 		<Routes>

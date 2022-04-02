@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { setTitle } from "../routes.js"
+import { setTitle } from "../titles.js"
 import { SectionView } from "./SectionView.js"
 import { Form, FormTextView, FormButtonRow } from "./form.js"
 import { Project, Task, TaskStatus } from "../data.js"
