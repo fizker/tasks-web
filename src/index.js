@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import { Provider } from "react-redux"
 
 import { App } from "./App.js"
@@ -19,4 +19,5 @@ if(container == null) {
 	throw new Error("Could not load root node")
 }
 
-ReactDOM.render(app, container)
+const root = createRoot(container)
+root.render(app)
