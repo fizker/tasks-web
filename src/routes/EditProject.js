@@ -1,13 +1,14 @@
 // @flow strict
 
 import * as React from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 import {
 	createProject, deleteProject, updateProject,
 } from "../actions.js"
 import { Project } from "../data.js"
 import { Page } from "./Page.js"
+import { useRelativeNavigate } from "../routes.js"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { LoadingDataView, ProjectEditView } from "../views.js"
 
@@ -23,7 +24,7 @@ export function EditProject({ type }: Props) : React.Node {
 	const dispatch = useDispatch()
 	const { projectID } = useParams()
 	const projects = useSelector(x => x.projects)
-	const navigate = useNavigate()
+	const navigate = useRelativeNavigate()
 
 	let title: string
 	let project: Project
@@ -46,7 +47,7 @@ export function EditProject({ type }: Props) : React.Node {
 		title = `Edit project: ${project.get("name")}`
 		onDelete = (project) => {
 			dispatch(deleteProject(project))
-			navigate(".")
+			navigate("../..")
 		}
 		break
 	}
@@ -58,16 +59,18 @@ export function EditProject({ type }: Props) : React.Node {
 			onSave={(project) => {
 				switch(type) {
 				case EditProjectType.New:
-					dispatch(createProject(project))
+					dispatch(createProject(project, p => {
+						navigate(`../${p.get("id") ?? ""}`)
+					}))
 					break
 				case EditProjectType.Edit:
 					dispatch(updateProject(project))
+					navigate("..")
 					break
 				}
-				navigate(".")
 			}}
 			onDelete={onDelete}
-			onCancel={() => { navigate(".") }}
+			onCancel={() => { navigate("..") }}
 		/>
 	</Page>
 }

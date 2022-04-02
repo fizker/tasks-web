@@ -237,7 +237,7 @@ export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppTh
 	}
 }
 
-export function createProject(project: Project) : AppThunkAction {
+export function createProject(project: Project, onSuccess?: (Project) => void) : AppThunkAction {
 	return async (dispatch, getState) => {
 		const tempID = "temp-id"
 
@@ -249,12 +249,15 @@ export function createProject(project: Project) : AppThunkAction {
 		})
 
 		const json: ProjectDTO = await post(`/projects`, project.toJSON())
+		const savedProject = parseProject(json)
 
 		dispatch({
 			type: "CREATE_PROJECT_DID_SAVE",
 			temporaryID: tempID,
-			project: parseProject(json),
+			project: savedProject,
 		})
+
+		onSuccess?.(savedProject)
 	}
 }
 
