@@ -93,7 +93,6 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 						onDrop={(event, target) => {
 							event.preventDefault()
 
-							// $FlowFixMe[incompatible-type] the enum is not correctly exhaustive for detecting that order is not uninitialized
 							let dir: ReorderPosition
 							switch(target) {
 							case DropTargetVerticalDir.Top:
