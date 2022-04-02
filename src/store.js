@@ -64,6 +64,8 @@ function updateTaskInProject(projects: List<Project>, task: Task, taskID = task.
 		return projects
 	}
 
+	tasks = tasks.set(tidx, task)
+
 	return projects.set(
 		pidx,
 		project.set(
