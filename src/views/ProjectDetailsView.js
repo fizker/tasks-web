@@ -10,6 +10,7 @@ import { DropTarget, DropTargetVerticalDir, MarkdownTextView } from "../views.js
 type Props = {
 	project: Project,
 	onReorderTask: (Task) => void,
+	onMarkTaskAsDone: (Task) => void,
 }
 
 function sortTask(x: Task, y: Task) : number {
@@ -50,7 +51,7 @@ function onDrop(event, task: Task, dropTarget: "top"|"bottom") {
 	})
 }
 
-export function ProjectDetailsView({ project, onReorderTask }: Props) : React.Node {
+export function ProjectDetailsView({ project, onReorderTask, onMarkTaskAsDone }: Props) : React.Node {
 	const [ isDragging, setIsDragging ] = React.useState(null)
 
 	const p = project
@@ -125,6 +126,13 @@ export function ProjectDetailsView({ project, onReorderTask }: Props) : React.No
 							{t.get("name")}
 						</h3>
 						<Link to={`edit-task/${t.get("id") ?? ""}`}>Edit</Link>
+						<a
+							href="#"
+							onClick={() => onMarkTaskAsDone(t)}
+							style={{ marginLeft: "1em" }}
+						>
+							Mark as done
+						</a>
 					</header>
 					{ t.get("description") &&
 					<MarkdownTextView>{t.get("description")}</MarkdownTextView>

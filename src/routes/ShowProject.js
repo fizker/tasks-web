@@ -82,6 +82,11 @@ export function ShowProject() : React.Node {
 					onReorderTask={(task) => {
 						dispatch(updateTask(task))
 					}}
+					onMarkTaskAsDone={(task) => {
+						if(confirm("Are you sure?")) {
+							dispatch(updateTask(task.set("status", "done")))
+						}
+					}}
 				/>}
 			/>
 		</Routes>
