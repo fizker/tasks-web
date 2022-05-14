@@ -8,7 +8,7 @@ import type { ProjectDTO, TaskDTO, TodoDTO, UpdateTodoDTO, TaskUpdateDTO, UUID }
 import type { State } from "./store.js"
 
 import { TaskStatus } from "./dtos.js"
-import { Project, Task, Todo } from "./data.js"
+import { Credentials, Project, Task, Todo } from "./data.js"
 
 // TODO: All HTTP functions should use this, not just delete
 async function parseJSONResponse<T>(response: Response) : Promise<?T> {
@@ -20,21 +20,30 @@ async function parseJSONResponse<T>(response: Response) : Promise<?T> {
 	}
 }
 
-async function get<T>(path: string) : Promise<T> {
+function authHeader(credentials: Credentials, headers: Headers = new Headers()) : Headers {
+	const username = credentials.get("username") ?? ""
+	const password = credentials.get("password") ?? ""
+	const creds = username + ":" + password
+	headers.set("authorization", "Basic " + atob(creds))
+
+	return headers
+}
+
+async function get<T>(path: string, credentials: Credentials) : Promise<T> {
 	const response = await fetch(`${SERVER_URL}${path}`)
 	const json: T = await response.json()
 	return json
 }
 
 /// Note: This is called `del` because `delete` is a keyword.
-async function del<T>(path: string) : Promise<?T> {
+async function del<T>(path: string, credentials: Credentials) : Promise<?T> {
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		method: "DELETE",
 	})
 	return parseJSONResponse(response)
 }
 
-async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDTO) : Promise<ResponseDTO> {
+async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDTO, credentials: Credentials|null) : Promise<ResponseDTO> {
 	const body = data == null ? null : JSON.stringify(data)
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		method: "POST",
@@ -47,7 +56,7 @@ async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDT
 	return json
 }
 
-async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO) : Promise<ResponseDTO> {
+async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO, credentials: Credentials) : Promise<ResponseDTO> {
 	const body = JSON.stringify(data)
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		method: "PUT",
@@ -194,20 +203,26 @@ function parseTodo(dto: TodoDTO) : Todo {
 	})
 }
 
-export const fetchProjects: AppThunkAction = async(dispatch) => {
+export const fetchProjects: AppThunkAction = async(dispatch, getState) => {
+	const { credentials, currentTodo } = getState()
+	if(credentials == null) return
+
 	dispatch({
 		type: "PROJECTS_WILL_LOAD",
 	})
-	const json: $ReadOnlyArray<ProjectDTO> = await get("/projects")
+	const json: $ReadOnlyArray<ProjectDTO> = await get("/projects", credentials)
 	dispatch({
 		type: "PROJECTS_DID_LOAD",
 		projects: json.map(parseProject),
 	})
 }
 
-export const fetchCurrentTodo: AppThunkAction = async(dispatch) => {
+export const fetchCurrentTodo: AppThunkAction = async(dispatch, getState) => {
+	const { credentials, currentTodo } = getState()
+	if(credentials == null) return
+
 	dispatch({ type: "CURRENT_TODO_WILL_LOAD" })
-	const json: TodoDTO = await get("/todo")
+	const json: TodoDTO = await get("/todo", credentials)
 	dispatch({
 		type: "CURRENT_TODO_DID_LOAD",
 		todo: parseTodo(json),
@@ -216,7 +231,8 @@ export const fetchCurrentTodo: AppThunkAction = async(dispatch) => {
 
 export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppThunkAction {
 	return async (dispatch, getState) => {
-		const { currentTodo } = getState()
+		const { credentials, currentTodo } = getState()
+		if(credentials == null) return
 
 		if(currentTodo == null) {
 			throw new Error("CurrentTodo must be loaded before it can be updated")
@@ -239,7 +255,7 @@ export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppTh
 			project: currentTodo.get("project").get("id") ?? "",
 			task: taskUpdate,
 		}
-		const json: TodoDTO = await post("/todo", updateDTO)
+		const json: TodoDTO = await post("/todo", updateDTO, credentials)
 
 		dispatch({
 			type: "CURRENT_TODO_DID_LOAD",
@@ -252,6 +268,9 @@ export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppTh
 
 export function createProject(project: Project, onSuccess?: (Project) => void) : AppThunkAction {
 	return async (dispatch, getState) => {
+		const { credentials } = getState()
+		if(credentials == null) return
+
 		const tempID = "temp-id"
 
 		dispatch({
@@ -261,7 +280,7 @@ export function createProject(project: Project, onSuccess?: (Project) => void) :
 				.set("id", tempID),
 		})
 
-		const json: ProjectDTO = await post(`/projects`, project.toJSON())
+		const json: ProjectDTO = await post(`/projects`, project.toJSON(), credentials)
 		const savedProject = parseProject(json)
 
 		dispatch({
@@ -276,6 +295,9 @@ export function createProject(project: Project, onSuccess?: (Project) => void) :
 
 export function deleteProject(project: Project) : AppThunkAction {
 	return async (dispatch, getState) => {
+		const { credentials } = getState()
+		if(credentials == null) return
+
 		const projectID = project.get("id")
 
 		if(projectID == null) {
@@ -287,7 +309,7 @@ export function deleteProject(project: Project) : AppThunkAction {
 			project,
 		})
 
-		await del(`/projects/${projectID}`)
+		await del(`/projects/${projectID}`, credentials)
 
 		dispatch({
 			type: "DELETE_PROJECT_DID_SAVE",
@@ -298,6 +320,9 @@ export function deleteProject(project: Project) : AppThunkAction {
 
 export function updateProject(project: Project) : AppThunkAction {
 	return async (dispatch, getState) => {
+		const { credentials } = getState()
+		if(credentials == null) return
+
 		const projectID = project.get("id")
 
 		if(projectID == null) {
@@ -309,7 +334,7 @@ export function updateProject(project: Project) : AppThunkAction {
 			project,
 		})
 
-		const json: ProjectDTO = await put(`/projects/${projectID}`, project.toJSON())
+		const json: ProjectDTO = await put(`/projects/${projectID}`, project.toJSON(), credentials)
 
 		dispatch({
 			type: "UPDATE_PROJECT_DID_SAVE",
@@ -320,6 +345,9 @@ export function updateProject(project: Project) : AppThunkAction {
 
 export function createTask(projectID: string, task: Task) : AppThunkAction {
 	return async (dispatch, getState) => {
+		const { credentials } = getState()
+		if(credentials == null) return
+
 		const project = getState().projects?.find(x => x.get("id") === projectID)
 
 		if(project == null) {
@@ -340,7 +368,7 @@ export function createTask(projectID: string, task: Task) : AppThunkAction {
 				.set("sortOrder", highestSortOrder + 1),
 		})
 
-		const json: TaskDTO = await post(`/projects/${projectID}/tasks`, task.toJSON())
+		const json: TaskDTO = await post(`/projects/${projectID}/tasks`, task.toJSON(), credentials)
 
 		dispatch({
 			type: "CREATE_TASK_DID_SAVE",
@@ -352,6 +380,9 @@ export function createTask(projectID: string, task: Task) : AppThunkAction {
 
 export function deleteTask(task: Task) : AppThunkAction {
 	return async (dispatch, getState) => {
+		const { credentials } = getState()
+		if(credentials == null) return
+
 		const taskID = task.get("id")
 		const projectID = task.get("project")
 
@@ -368,7 +399,7 @@ export function deleteTask(task: Task) : AppThunkAction {
 			task,
 		})
 
-		await del(`/projects/${projectID}/tasks/${taskID}`)
+		await del(`/projects/${projectID}/tasks/${taskID}`, credentials)
 
 		dispatch({
 			type: "DELETE_TASK_DID_SAVE",
@@ -379,6 +410,9 @@ export function deleteTask(task: Task) : AppThunkAction {
 
 export function updateTask(task: Task) : AppThunkAction {
 	return async (dispatch, getState) => {
+		const { credentials } = getState()
+		if(credentials == null) return
+
 		const taskID = task.get("id")
 		const projectID = task.get("project")
 
@@ -395,7 +429,7 @@ export function updateTask(task: Task) : AppThunkAction {
 			task: task,
 		})
 
-		const json: TaskDTO = await put(`/projects/${projectID}/tasks/${taskID}`, task.toJSON())
+		const json: TaskDTO = await put(`/projects/${projectID}/tasks/${taskID}`, task.toJSON(), credentials)
 
 		dispatch({
 			type: "UPDATE_TASK_DID_SAVE",
