@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
-import { Project, Task, Todo } from "./data.js"
+import {
+	Credentials,
+	Project, Task, Todo,
+} from "./data.js"
 
 import type { Store, DispatchAPI } from "redux"
 import type { Action, DispatchAction } from "./actions.js"
@@ -13,6 +16,7 @@ import type { Action, DispatchAction } from "./actions.js"
 export type State = $ReadOnly<{
 	projects: ?List<Project>,
 	currentTodo?: ?Todo,
+	credentials?: ?Credentials,
 }>
 
 const defaultState: State = {
@@ -127,6 +131,17 @@ function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
 
 export function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
+	case "CREDENTIALS_WILL_LOAD":
+		return {
+			...state,
+			credentials: new Credentials({
+				username: action.username,
+				password: action.password,
+			}),
+		}
+	case "CREDENTIALS_DID_LOAD":
+		return state
+
 	case "PROJECTS_WILL_LOAD":
 		return {
 			...state,

@@ -7,6 +7,10 @@ import type { ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
 
 export { ProjectStatus, TaskStatus } from "./dtos.js"
 
+export const Credentials: RecordFactory<{ username: string, password: string }> = Record({
+	username: "", password: "",
+})
+
 export enum ReorderPosition {
 	Before, After
 }

@@ -3,12 +3,9 @@
 import * as React from "react"
 import { Record } from "immutable"
 
+import { Credentials } from "../data.js"
 import { Page } from "./Page.js"
 import { Form, FormTextView, FormButtonRow } from "../views/form.js"
-
-const Credentials = Record({
-	username: "", password: "",
-})
 
 type Props = {
 	returnPath?: string,

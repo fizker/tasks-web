@@ -62,6 +62,18 @@ async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO) : Prom
 
 type ReduxInitAction = { type: "INIT" }
 
+type CredentialsWillLoadAction = {
+	type: "CREDENTIALS_WILL_LOAD",
+	username: string,
+	password: string,
+}
+type CredentialsDidLoadAction = {
+	type: "CREDENTIALS_DID_LOAD",
+}
+type CredentialsActions =
+	| CredentialsWillLoadAction
+	| CredentialsDidLoadAction
+
 type ProjectsWillLoadAction = {
 	type: "PROJECTS_WILL_LOAD",
 }
@@ -156,6 +168,7 @@ type TaskAction =
 export type Action =
 	| ReduxInitAction
 	| ProjectsAction
+	| CredentialsActions
 	| CurrentTodoAction
 	| TaskAction
 
