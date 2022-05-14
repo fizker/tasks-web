@@ -1,7 +1,7 @@
 // @flow strict
 
 import { List, Record } from "immutable"
-import type { RecordFactory, RecordOf } from "immutable"
+import type { RecordFactory } from "immutable"
 
 import type { ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
 

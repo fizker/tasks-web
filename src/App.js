@@ -12,6 +12,7 @@ import {
 import {
 	CurrentTodoRoute,
 	EditProject, EditProjectType,
+	Login,
 	Projects,
 	ShowProject,
 } from "./routes.js"
@@ -31,6 +32,7 @@ export function App() : React.Node {
 
 			<Routes>
 				<Route path="/" element={<Navigate to="/projects" />} />
+				<Route path="login" element={<Login />} />
 				<Route path="projects">
 					<Route index element={<Projects />} />
 					<Route path="new" element={<EditProject type={EditProjectType.New} />} />
