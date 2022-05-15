@@ -4,11 +4,11 @@ import { List } from "immutable"
 
 import type { ThunkAction } from "redux-thunk"
 
-import type { ProjectDTO, TaskDTO, TodoDTO, UpdateTodoDTO, TaskUpdateDTO, UUID } from "./dtos.js"
+import type { ProfileDTO, ProjectDTO, TaskDTO, TodoDTO, UpdateTodoDTO, TaskUpdateDTO, UUID } from "./dtos.js"
 import type { State } from "./store.js"
 
 import { TaskStatus } from "./dtos.js"
-import { Credentials, Project, Task, Todo } from "./data.js"
+import { Credentials, Profile, Project, Task, Todo } from "./data.js"
 
 // TODO: All HTTP functions should use this, not just delete
 async function parseJSONResponse<T>(response: Response) : Promise<?T> {
@@ -82,6 +82,21 @@ type CredentialsDidLoadAction = {
 type CredentialsActions =
 	| CredentialsWillLoadAction
 	| CredentialsDidLoadAction
+
+type ProfileWillLoadAction = {
+	type: "PROFILE_WILL_LOAD",
+}
+type ProfileDidLoadAction = {
+	type: "PROFILE_DID_LOAD",
+	profile: Profile,
+}
+type ProfileDidFailAction = {
+	type: "PROFILE_DID_FAIL",
+}
+type ProfileActions =
+	| ProfileWillLoadAction
+	| ProfileDidLoadAction
+	| ProfileDidFailAction
 
 type ProjectsWillLoadAction = {
 	type: "PROJECTS_WILL_LOAD",
@@ -176,8 +191,9 @@ type TaskAction =
 
 export type Action =
 	| ReduxInitAction
-	| ProjectsAction
 	| CredentialsActions
+	| ProfileActions
+	| ProjectsAction
 	| CurrentTodoAction
 	| TaskAction
 

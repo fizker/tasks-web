@@ -2,6 +2,12 @@
 
 export type UUID = string
 
+export type ProfileDTO = {
+	name: string,
+	username: string,
+	password?: ?string,
+}
+
 export const TaskStatus = {
 	"notStarted": "notStarted",
 	"done": "done",

@@ -3,7 +3,7 @@
 import { List, Record } from "immutable"
 import type { RecordFactory } from "immutable"
 
-import type { ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
+import type { ProfileDTO, ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
 
 export { ProjectStatus, TaskStatus } from "./dtos.js"
 
@@ -14,6 +14,12 @@ export const Credentials: RecordFactory<{ username: string, password: string }> 
 export enum ReorderPosition {
 	Before, After
 }
+
+const defaultProfile: ProfileDTO = {
+	name: "",
+	username: "",
+}
+export const Profile: RecordFactory<ProfileDTO> = Record(defaultProfile)
 
 const defaultTask: TaskDTO = {
 	id: undefined,

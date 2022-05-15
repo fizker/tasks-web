@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
 import {
-	Credentials,
+	Credentials, Profile,
 	Project, Task, Todo,
 } from "./data.js"
 
@@ -17,6 +17,7 @@ export type State = $ReadOnly<{
 	projects: ?List<Project>,
 	currentTodo?: ?Todo,
 	credentials?: ?Credentials,
+	profile?: ?Profile,
 }>
 
 const defaultState: State = {
@@ -141,6 +142,19 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		}
 	case "CREDENTIALS_DID_LOAD":
 		return state
+
+	case "PROFILE_WILL_LOAD":
+		return state
+	case "PROFILE_DID_LOAD":
+		return {
+			...state,
+			profile: action.profile,
+		}
+	case "PROFILE_DID_FAIL":
+		return {
+			...state,
+			profile: null,
+		}
 
 	case "PROJECTS_WILL_LOAD":
 		return {
