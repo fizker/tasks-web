@@ -22,6 +22,30 @@ export type State = $ReadOnly<{
 
 const defaultState: State = {
 	projects: null,
+	credentials: loadStoredCredentials(),
+}
+
+function loadStoredCredentials() : Credentials|null {
+	const json = sessionStorage.getItem("credentials")
+	if(json == null) {
+		return null
+	}
+
+	const data = JSON.parse(json)
+	const u = data.username
+	const p = data.password
+
+	return new Credentials({ username: u, password: p })
+}
+function updateStoredCredentials(creds: Credentials|null) {
+	if(creds == null) {
+		sessionStorage.removeItem("credentials")
+		return
+	}
+
+	const data = creds.toJSON()
+	const json = JSON.stringify(data)
+	sessionStorage.setItem("credentials", json)
 }
 
 function updateProject(projects: List<Project>, project: Project, projectID = project.get("id")) {
@@ -132,16 +156,25 @@ function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
 
 export function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
-	case "CREDENTIALS_WILL_LOAD":
+	case "REQUEST_ACCESS_TOKEN_WILL_LOAD":
+		const credentials = new Credentials({
+			username: action.username,
+			password: action.password,
+		})
+		updateStoredCredentials(credentials)
 		return {
 			...state,
-			credentials: new Credentials({
-				username: action.username,
-				password: action.password,
-			}),
+			credentials,
 		}
-	case "CREDENTIALS_DID_LOAD":
+	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
 		return state
+	case "REQUEST_ACCESS_TOKEN_DID_FAIL":
+		updateStoredCredentials(null)
+		return {
+			...state,
+			credentials: null,
+			profile: null,
+		}
 
 	case "PROFILE_WILL_LOAD":
 		return state

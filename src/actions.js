@@ -71,17 +71,22 @@ async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO, creden
 
 type ReduxInitAction = { type: "INIT" }
 
-type CredentialsWillLoadAction = {
-	type: "CREDENTIALS_WILL_LOAD",
+type RequestAccessTokenWillLoadAction = {
+	type: "REQUEST_ACCESS_TOKEN_WILL_LOAD",
 	username: string,
 	password: string,
 }
-type CredentialsDidLoadAction = {
-	type: "CREDENTIALS_DID_LOAD",
+type RequestAccessTokenDidLoadAction = {
+	type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
 }
-type CredentialsActions =
-	| CredentialsWillLoadAction
-	| CredentialsDidLoadAction
+// TODO: Throw this when getting 401
+type RequestAccessTokenDidFailAction = {
+	type: "REQUEST_ACCESS_TOKEN_DID_FAIL",
+}
+type RequestAccessTokenActions =
+	| RequestAccessTokenWillLoadAction
+	| RequestAccessTokenDidLoadAction
+	| RequestAccessTokenDidFailAction
 
 type ProfileWillLoadAction = {
 	type: "PROFILE_WILL_LOAD",
@@ -191,7 +196,7 @@ type TaskAction =
 
 export type Action =
 	| ReduxInitAction
-	| CredentialsActions
+	| RequestAccessTokenActions
 	| ProfileActions
 	| ProjectsAction
 	| CurrentTodoAction
@@ -243,6 +248,22 @@ export const fetchCurrentTodo: AppThunkAction = async(dispatch, getState) => {
 		type: "CURRENT_TODO_DID_LOAD",
 		todo: parseTodo(json),
 	})
+}
+
+export function requestAccessToken(username: string, password: string) : AppThunkAction {
+	return async (dispatch) => {
+		dispatch({
+			type: "REQUEST_ACCESS_TOKEN_WILL_LOAD",
+			username,
+			password,
+		})
+
+		// TODO: When OAuth lands, this should actually do network request
+
+		dispatch({
+			type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
+		})
+	}
 }
 
 export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppThunkAction {
