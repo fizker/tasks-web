@@ -20,17 +20,25 @@ async function parseJSONResponse<T>(response: Response) : Promise<?T> {
 	}
 }
 
-function authHeader(credentials: Credentials, headers: Headers = new Headers()) : Headers {
-	const username = credentials.get("username") ?? ""
-	const password = credentials.get("password") ?? ""
-	const creds = username + ":" + password
-	headers.set("authorization", "Basic " + atob(creds))
+function authHeader(credentials: ?Credentials, h: { [string]: string} | Headers = new Headers()) : Headers {
+	const headers = h instanceof Headers
+		? h
+		: new Headers(h)
+
+	if(credentials != null) {
+		const username = credentials.get("username") ?? ""
+		const password = credentials.get("password") ?? ""
+		const creds = username + ":" + password
+		headers.set("authorization", "Basic " + btoa(creds))
+	}
 
 	return headers
 }
 
 async function get<T>(path: string, credentials: Credentials) : Promise<T> {
-	const response = await fetch(`${SERVER_URL}${path}`)
+	const response = await fetch(`${SERVER_URL}${path}`, {
+		headers: authHeader(credentials),
+	})
 	const json: T = await response.json()
 	return json
 }
@@ -39,6 +47,7 @@ async function get<T>(path: string, credentials: Credentials) : Promise<T> {
 async function del<T>(path: string, credentials: Credentials) : Promise<?T> {
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		method: "DELETE",
+		headers: authHeader(credentials),
 	})
 	return parseJSONResponse(response)
 }
@@ -48,9 +57,9 @@ async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDT
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		method: "POST",
 		body,
-		headers: {
+		headers: authHeader(credentials, {
 			"content-type": "application/json",
-		},
+		}),
 	})
 	const json: ResponseDTO = await response.json()
 	return json
@@ -61,9 +70,9 @@ async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO, creden
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		method: "PUT",
 		body,
-		headers: {
+		headers: authHeader(credentials, {
 			"content-type": "application/json",
-		},
+		}),
 	})
 	const json: ResponseDTO = await response.json()
 	return json
