@@ -107,10 +107,14 @@ type ProfileDidLoadAction = {
 type ProfileDidFailAction = {
 	type: "PROFILE_DID_FAIL",
 }
+type SignOutAction = {
+	type: "SIGN_OUT",
+}
 type ProfileActions =
 	| ProfileWillLoadAction
 	| ProfileDidLoadAction
 	| ProfileDidFailAction
+	| SignOutAction
 
 type ProjectsWillLoadAction = {
 	type: "PROJECTS_WILL_LOAD",
@@ -271,6 +275,14 @@ export function requestAccessToken(username: string, password: string) : AppThun
 
 		dispatch({
 			type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
+		})
+	}
+}
+
+export function signOut() : AppThunkAction {
+	return async (dispatch) => {
+		dispatch({
+			type: "SIGN_OUT",
 		})
 	}
 }

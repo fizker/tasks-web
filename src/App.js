@@ -13,6 +13,9 @@ import {
 } from "react-router-dom"
 
 import {
+	signOut,
+} from "./actions.js"
+import {
 	CurrentTodoRoute,
 	EditProject, EditProjectType,
 	Login,
@@ -20,6 +23,7 @@ import {
 	ShowProject,
 } from "./routes.js"
 import {
+	useAppDispatch as useDispatch,
 	useAppSelector as useSelector,
 } from "./store.js"
 import {
@@ -28,12 +32,23 @@ import {
 } from "./titles.js"
 
 export function App() : React.Node {
+	const credentials = useSelector(x => x.credentials)
+	const dispatch = useDispatch()
+
 	return <Router>
 		<ResetTitle />
 		<div>
 			<nav id="main-menu">
-				<Link to="projects">Projects</Link>
-				<Link to="todo">Current Todo</Link>
+				{ credentials == null
+				? <>
+					<Link to="login">Login</Link>
+				</>
+				: <>
+					<Link to="projects">Projects</Link>
+					<Link to="todo">Current Todo</Link>
+					<Link to="/" onClick={() => dispatch(signOut())}>Log out</Link>
+				</>
+				}
 			</nav>
 
 			<Routes>

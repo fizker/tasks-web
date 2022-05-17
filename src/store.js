@@ -169,6 +169,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
 		return state
 	case "REQUEST_ACCESS_TOKEN_DID_FAIL":
+	case "SIGN_OUT":
 		updateStoredCredentials(null)
 		return {
 			...state,
