@@ -25,7 +25,7 @@ export function Login({ returnPath }: Props) : React.Node {
 			if(result.errors.length == 0) {
 				dispatch(requestAccessToken(result.username, result.password))
 				setValidationErrors([])
-				navigate(returnPath ?? "/")
+				navigate(returnPath ?? getReturnURLFromQuery() ?? "/")
 			} else {
 				setValidationErrors(result.errors)
 			}
@@ -53,4 +53,9 @@ function validateLogin(creds: Credentials) : { username: string, password: strin
 	}
 
 	return { username, password, errors }
+}
+
+function getReturnURLFromQuery() : ?string {
+	const url = new URL(location.href)
+	return url.searchParams.get("returnURL")
 }

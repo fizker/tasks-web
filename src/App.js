@@ -5,8 +5,11 @@ import {
 	BrowserRouter as Router,
 	Link,
 	Navigate,
+	Outlet,
+	Redirect,
 	Route,
 	Routes,
+	useLocation,
 } from "react-router-dom"
 
 import {
@@ -16,6 +19,9 @@ import {
 	Projects,
 	ShowProject,
 } from "./routes.js"
+import {
+	useAppSelector as useSelector,
+} from "./store.js"
 import {
 	ResetTitle,
 	TitleFromProject,
@@ -33,16 +39,29 @@ export function App() : React.Node {
 			<Routes>
 				<Route path="/" element={<Navigate to="/projects" />} />
 				<Route path="login" element={<Login />} />
-				<Route path="projects">
-					<Route index element={<Projects />} />
-					<Route path="new" element={<EditProject type={EditProjectType.New} />} />
-					<Route path=":projectID" element={<TitleFromProject />}>
-						<Route path="edit" element={<EditProject type={EditProjectType.Edit} />} />
-						<Route index path="*" element={<ShowProject />} />
+				<Route element={<Protected />}>
+					<Route path="projects">
+						<Route index element={<Projects />} />
+						<Route path="new" element={<EditProject type={EditProjectType.New} />} />
+						<Route path=":projectID" element={<TitleFromProject />}>
+							<Route path="edit" element={<EditProject type={EditProjectType.Edit} />} />
+							<Route index path="*" element={<ShowProject />} />
+						</Route>
 					</Route>
+					<Route path="/todo" element={<CurrentTodoRoute />} />
 				</Route>
-				<Route path="/todo" element={<CurrentTodoRoute />} />
 			</Routes>
 		</div>
 	</Router>
+}
+
+function Protected() {
+	const credentials = useSelector(x => x.credentials)
+	const location = useLocation()
+
+	if(credentials == null) {
+		return <Navigate to={`/login?returnURL=${location.pathname}`} />
+	}
+
+	return <Outlet />
 }
