@@ -7,8 +7,16 @@ import type { ProfileDTO, ProjectDTO, TaskDTO, TodoDTO } from "./dtos.js"
 
 export { ProjectStatus, TaskStatus } from "./dtos.js"
 
-export const Credentials: RecordFactory<{ username: string, password: string }> = Record({
-	username: "", password: "",
+export const Credentials: RecordFactory<{
+	accessTokenExpiration: string,
+	type: "mac"|"bearer",
+	accessToken: string,
+	refreshToken?: ?string,
+}> = Record({
+	accessTokenExpiration: "",
+	accessToken: "",
+	type: "bearer",
+	refreshToken: null,
 })
 
 export enum ReorderPosition {

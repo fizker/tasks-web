@@ -50,3 +50,17 @@ export type UpdateTodoDTO = {
 	projectStatus?: ?$Keys<typeof ProjectStatus>,
 	task?: ?TaskUpdateDTO,
 }
+
+export type AccessTokenResponse = {
+	access_token: string,
+	token_type: "mac"|"bearer",
+	expires_in?: ?number,
+	refresh_token?: ?string,
+	scope?: ?string,
+	error?: void,
+}
+export type ErrorResponse = {
+	error: string,
+	error_description?: ?string,
+	error_uri?: ?string,
+}

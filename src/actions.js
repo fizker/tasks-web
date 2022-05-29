@@ -4,7 +4,10 @@ import { List } from "immutable"
 
 import type { ThunkAction } from "redux-thunk"
 
-import type { ProfileDTO, ProjectDTO, TaskDTO, TodoDTO, UpdateTodoDTO, TaskUpdateDTO, UUID } from "./dtos.js"
+import type {
+	AccessTokenResponse, ErrorResponse,
+	ProfileDTO, ProjectDTO, TaskDTO, TodoDTO, UpdateTodoDTO, TaskUpdateDTO, UUID,
+} from "./dtos.js"
 import type { State } from "./store.js"
 
 import { TaskStatus } from "./dtos.js"
@@ -26,10 +29,11 @@ function authHeader(credentials: ?Credentials, h: { [string]: string} | Headers 
 		: new Headers(h)
 
 	if(credentials != null) {
-		const username = credentials.get("username") ?? ""
-		const password = credentials.get("password") ?? ""
-		const creds = username + ":" + password
-		headers.set("authorization", "Basic " + btoa(creds))
+		// TODO: Test the expiration date
+
+		const accessToken = credentials.get("accessToken") ?? ""
+		const type = credentials.get("type") ?? "bearer"
+		headers.set("authorization", `${type} ${accessToken}`)
 	}
 
 	return headers
@@ -87,10 +91,12 @@ type RequestAccessTokenWillLoadAction = {
 }
 type RequestAccessTokenDidLoadAction = {
 	type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
+	accessToken: AccessTokenResponse,
 }
 // TODO: Throw this when getting 401
 type RequestAccessTokenDidFailAction = {
 	type: "REQUEST_ACCESS_TOKEN_DID_FAIL",
+	error: ErrorResponse,
 }
 type RequestAccessTokenActions =
 	| RequestAccessTokenWillLoadAction
@@ -263,7 +269,7 @@ export const fetchCurrentTodo: AppThunkAction = async(dispatch, getState) => {
 	})
 }
 
-export function requestAccessToken(username: string, password: string) : AppThunkAction {
+export function requestAccessToken(username: string, password: string, onSuccess: () => void) : AppThunkAction {
 	return async (dispatch) => {
 		dispatch({
 			type: "REQUEST_ACCESS_TOKEN_WILL_LOAD",
@@ -271,11 +277,30 @@ export function requestAccessToken(username: string, password: string) : AppThun
 			password,
 		})
 
-		// TODO: When OAuth lands, this should actually do network request
+		const request = {
+			grant_type: "password",
+			username,
+			password,
+		}
 
-		dispatch({
-			type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
-		})
+		try {
+			const res: AccessTokenResponse = await post("/auth/token", request, null)
+
+			dispatch({
+				type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
+				accessToken: res,
+			})
+
+			onSuccess()
+		} catch(e) {
+			// TODO: Do we want to throw the ErrorResponse, or wrap it in an HTTPErrorResponse object?
+			const error: ErrorResponse = e
+
+			dispatch({
+				type: "REQUEST_ACCESS_TOKEN_DID_FAIL",
+				error: error,
+			})
+		}
 	}
 }
 

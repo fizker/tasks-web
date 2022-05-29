@@ -5,10 +5,14 @@ import { useNavigate } from "react-router-dom"
 import { Record } from "immutable"
 
 import { requestAccessToken } from "../actions";
-import { Credentials } from "../data.js"
 import { Page } from "./Page.js"
 import { useAppDispatch as useDispatch } from "../store.js"
 import { Form, FormTextView, FormButtonRow, FormValidationError } from "../views/form.js"
+import type { RecordFactory } from "immutable";
+
+const Credentials: RecordFactory<{ username: string, password: string }> = Record({
+	username: "", password: "",
+})
 
 type Props = {
 	returnPath?: string,
@@ -23,9 +27,10 @@ export function Login({ returnPath }: Props) : React.Node {
 		<Form record={storedCredentials} onSubmit={(creds) => {
 			const result = validateLogin(creds)
 			if(result.errors.length == 0) {
-				dispatch(requestAccessToken(result.username, result.password))
+				dispatch(requestAccessToken(result.username, result.password, () => {
+					navigate(returnPath ?? getReturnURLFromQuery() ?? "/")
+				}))
 				setValidationErrors([])
-				navigate(returnPath ?? getReturnURLFromQuery() ?? "/")
 			} else {
 				setValidationErrors(result.errors)
 			}

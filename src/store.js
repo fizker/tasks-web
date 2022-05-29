@@ -32,10 +32,14 @@ function loadStoredCredentials() : Credentials|null {
 	}
 
 	const data = JSON.parse(json)
-	const u = data.username
-	const p = data.password
+	const { accessToken, refreshToken, accessTokenExpiration, type } = data
 
-	return new Credentials({ username: u, password: p })
+	return new Credentials({
+		type,
+		accessTokenExpiration,
+		accessToken,
+		refreshToken,
+	})
 }
 function updateStoredCredentials(creds: Credentials|null) {
 	if(creds == null) {
@@ -157,17 +161,21 @@ function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
 export function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
 	case "REQUEST_ACCESS_TOKEN_WILL_LOAD":
+		return state
+	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
+		const response = action.accessToken
 		const credentials = new Credentials({
-			username: action.username,
-			password: action.password,
+			type: response.token_type,
+			accessToken: response.access_token,
+			accessTokenExpiration: new Date(Date.now() + (response.expires_in ?? 3600) * 1000).toJSON(),
+			refreshToken: response.refresh_token,
 		})
 		updateStoredCredentials(credentials)
+
 		return {
 			...state,
 			credentials,
 		}
-	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
-		return state
 	case "REQUEST_ACCESS_TOKEN_DID_FAIL":
 	case "SIGN_OUT":
 		updateStoredCredentials(null)
