@@ -8,8 +8,6 @@ import { App } from "./App.js"
 import { fetchProjects } from "./actions.js"
 import { store } from "./store.js"
 
-store.dispatch(fetchProjects)
-
 const app = <Provider store={store}>
 	<App />
 </Provider>

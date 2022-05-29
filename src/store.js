@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
-import { Project, Task, Todo } from "./data.js"
+import {
+	Credentials, Profile,
+	Project, Task, Todo,
+} from "./data.js"
 
 import type { Store, DispatchAPI } from "redux"
 import type { Action, DispatchAction } from "./actions.js"
@@ -13,10 +16,40 @@ import type { Action, DispatchAction } from "./actions.js"
 export type State = $ReadOnly<{
 	projects: ?List<Project>,
 	currentTodo?: ?Todo,
+	credentials?: ?Credentials,
+	profile?: ?Profile,
 }>
 
 const defaultState: State = {
 	projects: null,
+	credentials: loadStoredCredentials(),
+}
+
+function loadStoredCredentials() : Credentials|null {
+	const json = sessionStorage.getItem("credentials")
+	if(json == null) {
+		return null
+	}
+
+	const data = JSON.parse(json)
+	const { accessToken, refreshToken, accessTokenExpiration, type } = data
+
+	return new Credentials({
+		type,
+		accessTokenExpiration,
+		accessToken,
+		refreshToken,
+	})
+}
+function updateStoredCredentials(creds: Credentials|null) {
+	if(creds == null) {
+		sessionStorage.removeItem("credentials")
+		return
+	}
+
+	const data = creds.toJSON()
+	const json = JSON.stringify(data)
+	sessionStorage.setItem("credentials", json)
 }
 
 function updateProject(projects: List<Project>, project: Project, projectID = project.get("id")) {
@@ -127,6 +160,44 @@ function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
 
 export function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
+	case "REQUEST_ACCESS_TOKEN_WILL_LOAD":
+		return state
+	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
+		const response = action.accessToken
+		const credentials = new Credentials({
+			type: response.token_type,
+			accessToken: response.access_token,
+			accessTokenExpiration: new Date(Date.now() + (response.expires_in ?? 3600) * 1000).toJSON(),
+			refreshToken: response.refresh_token,
+		})
+		updateStoredCredentials(credentials)
+
+		return {
+			...state,
+			credentials,
+		}
+	case "REQUEST_ACCESS_TOKEN_DID_FAIL":
+	case "SIGN_OUT":
+		updateStoredCredentials(null)
+		return {
+			...state,
+			credentials: null,
+			profile: null,
+		}
+
+	case "PROFILE_WILL_LOAD":
+		return state
+	case "PROFILE_DID_LOAD":
+		return {
+			...state,
+			profile: action.profile,
+		}
+	case "PROFILE_DID_FAIL":
+		return {
+			...state,
+			profile: null,
+		}
+
 	case "PROJECTS_WILL_LOAD":
 		return {
 			...state,

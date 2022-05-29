@@ -40,3 +40,7 @@
 .project-list__item--wrapper:first-of-type {
 	margin-top: 20px;
 }
+
+.validation-error {
+	color: red;
+}

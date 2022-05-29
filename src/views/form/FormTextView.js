@@ -15,9 +15,10 @@ const multiLineStyle = {
 type Props<T> = {
 	label: string,
 	field: string,
+	type?: string,
 	isMultiLine?: bool,
 }
-export function FormTextView<T>({ label, field, isMultiLine = false }: Props<T>) : React.Node {
+export function FormTextView<T>({ label, field, type = "text", isMultiLine = false }: Props<T>) : React.Node {
 	return <formContext.Consumer>{({ record, updateRecord }) =>
 		<tr>
 			<td style={isMultiLine ? multiLineStyle : singleLineStyle}>{label}:</td>
@@ -35,6 +36,7 @@ export function FormTextView<T>({ label, field, isMultiLine = false }: Props<T>)
 				: <input
 					value={record.get(field)}
 					onChange={e => updateRecord(field, e.currentTarget.value)}
+					type={type}
 					style={{
 						width: "100%",
 					}}

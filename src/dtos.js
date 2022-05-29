@@ -2,6 +2,12 @@
 
 export type UUID = string
 
+export type ProfileDTO = {
+	name: string,
+	username: string,
+	password?: ?string,
+}
+
 export const TaskStatus = {
 	"notStarted": "notStarted",
 	"done": "done",
@@ -43,4 +49,18 @@ export type UpdateTodoDTO = {
 	project: UUID,
 	projectStatus?: ?$Keys<typeof ProjectStatus>,
 	task?: ?TaskUpdateDTO,
+}
+
+export type AccessTokenResponse = {
+	access_token: string,
+	token_type: "mac"|"bearer",
+	expires_in?: ?number,
+	refresh_token?: ?string,
+	scope?: ?string,
+	error?: void,
+}
+export type ErrorResponse = {
+	error: string,
+	error_description?: ?string,
+	error_uri?: ?string,
 }

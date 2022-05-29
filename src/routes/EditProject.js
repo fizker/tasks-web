@@ -4,7 +4,7 @@ import * as React from "react"
 import { useParams } from "react-router-dom"
 
 import {
-	createProject, deleteProject, updateProject,
+	createProject, deleteProject, updateProject, fetchProjects,
 } from "../actions.js"
 import { Project } from "../data.js"
 import { Page } from "./Page.js"
@@ -36,7 +36,10 @@ export function EditProject({ type }: Props) : React.Node {
 		project = new Project()
 		break
 	case EditProjectType.Edit:
-		if(projects == null) return <LoadingDataView />
+		if(projects == null) {
+			dispatch(fetchProjects())
+			return <LoadingDataView />
+		}
 
 		const p = projects.find(x => x.get("id") === projectID)
 		if(p == null) {
