@@ -4,7 +4,7 @@ import * as React from "react"
 import { useNavigate, useParams, Route, Routes } from "react-router-dom"
 
 import {
-	createTask, deleteTask, updateTask,
+	createTask, deleteTask, updateTask, fetchProjects,
 } from "../actions.js"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 import { Page } from "./Page.js"
@@ -39,6 +39,7 @@ export function ShowProject() : React.Node {
 	}
 
 	if(projects == null) {
+		dispatch(fetchProjects())
 		return <LoadingDataView />
 	}
 	const project = projects.find(x => x.get("id") == projectID)

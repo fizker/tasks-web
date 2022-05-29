@@ -243,18 +243,20 @@ function parseTodo(dto: TodoDTO) : Todo {
 	})
 }
 
-export const fetchProjects: AppThunkAction = async(dispatch, getState) => {
-	const { credentials, currentTodo } = getState()
-	if(credentials == null) return
+export function fetchProjects() : AppThunkAction {
+	return async(dispatch, getState) => {
+		const { credentials, currentTodo } = getState()
+		if(credentials == null) return
 
-	dispatch({
-		type: "PROJECTS_WILL_LOAD",
-	})
-	const json: $ReadOnlyArray<ProjectDTO> = await get("/projects", credentials)
-	dispatch({
-		type: "PROJECTS_DID_LOAD",
-		projects: json.map(parseProject),
-	})
+		dispatch({
+			type: "PROJECTS_WILL_LOAD",
+		})
+		const json: $ReadOnlyArray<ProjectDTO> = await get("/projects", credentials)
+		dispatch({
+			type: "PROJECTS_DID_LOAD",
+			projects: json.map(parseProject),
+		})
+	}
 }
 
 export const fetchCurrentTodo: AppThunkAction = async(dispatch, getState) => {
@@ -345,7 +347,7 @@ export function changeCurrentTodo(taskStatus: ?$Keys<typeof TaskStatus>) : AppTh
 			todo: parseTodo(json),
 		})
 
-		dispatch(fetchProjects)
+		dispatch(fetchProjects())
 	}
 }
 

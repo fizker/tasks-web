@@ -5,14 +5,17 @@ import {
 	Link,
 } from "react-router-dom"
 
-import { useAppSelector as useSelector } from "../store.js"
+import { fetchProjects } from "../actions.js"
+import { useAppSelector as useSelector, useAppDispatch as useDispatch } from "../store.js"
 import { Page } from "./Page.js"
 import { LoadingDataView, ProjectSummaryView } from "../views.js"
 
 export function Projects() : React.Node {
+	const dispatch = useDispatch()
 	const projects = useSelector(x => x.projects)
 
 	if(projects == null) {
+		dispatch(fetchProjects())
 		return <LoadingDataView />
 	}
 
