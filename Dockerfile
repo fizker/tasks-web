@@ -1,7 +1,4 @@
-#############################
-
-
-FROM node:fermium-alpine as client
+FROM fizker/serve-prepare as builder
 WORKDIR /root
 
 # Copying files required for installing dependencies. We do this first, because
@@ -16,25 +13,15 @@ COPY . .
 
 RUN npx webpack
 
-
-#############################
-
-
-FROM fizker/serve-prepare as builder
-WORKDIR /root
-
 # Copy the setup-request
 COPY serve-setup-request.json ./serve-setup-request.json
-
-# Copy the client code.
-COPY --from=client /root/static ./target
 
 # This makes it possible to skip compression by adding `--build-arg skip_compression=true` to the `docker build` command
 ARG skip_compression=false
 ENV -e SERVE_SKIP_COMPRESSION=$skip_compression
 
 # Execute the build
-RUN serve-prepare build --request=serve-setup-request.json --target=target --output=output
+RUN serve-prepare build --request=serve-setup-request.json --target=static --output=output
 
 
 #############################
@@ -50,6 +37,3 @@ COPY --from=builder /root/output ./output
 
 ENV PORT=80 HTTPS_PORT=443
 ENTRYPOINT [ "serve", "output/setup.json" ]
-
-
-#############################
