@@ -1,3 +1,54 @@
+body {
+	--color-validation: red;
+	--color-separator: var(--color-foreground);
+	--color-link: #180;
+	--color-foreground: #030;
+	--color-background: #efe1;
+	--color-shadow: var(--color-foreground);
+	--color-focus-ring: #180;
+	--shadow-drop: 2px 2px var(--color-shadow);
+	--shadow-drop-active: 1px 1px inset var(--color-shadow), 1px 1px var(--color-shadow);
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		--color-link: #180;
+		--color-foreground: white;
+		--color-background: #222;
+		--color-separator: #ddd;
+		--color-shadow: #efe;
+		--color-focus-ring: #180;
+	}
+}
+
+a {
+	color: var(--color-link);
+}
+
+body, textarea, input, button {
+	background: var(--color-background);
+	color: var(--color-foreground);
+}
+
+button {
+	border: 1px solid var(--color-separator);
+	box-shadow: var(--shadow-drop);
+}
+button:active {
+	box-shadow: var(--shadow-drop-active);
+}
+button + button {
+	margin-left: 8px;
+}
+
+textarea, input {
+	border: 1px solid var(--color-separator);
+}
+:focus-visible {
+	outline: 2px solid var(--color-focus-ring);
+	outline-offset: -1px;
+}
+
 #main-menu {
 }
 
@@ -34,7 +85,7 @@
 }
 
 .project-list__item--wrapper {
-	border-top: 1px solid black;
+	border-top: 1px solid var(--color-separator);
 }
 
 .project-list__item--wrapper:first-of-type {
@@ -42,5 +93,5 @@
 }
 
 .validation-error {
-	color: red;
+	color: var(--color-validation);
 }
