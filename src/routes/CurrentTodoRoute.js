@@ -14,7 +14,7 @@ export function CurrentTodoRoute() : React.Node {
 	const currentTodo = useSelector(x => x.currentTodo)
 
 	React.useEffect(() => {
-		dispatch(fetchCurrentTodo)
+		dispatch(fetchCurrentTodo())
 	}, [true])
 
 	if(currentTodo == null) {
