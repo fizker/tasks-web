@@ -4,11 +4,12 @@ import * as React from "react"
 import { useNavigate } from "react-router-dom"
 import { Record } from "immutable"
 
-import { requestAccessToken } from "../actions";
+import { requestAccessToken } from "../actions"
 import { Page } from "./Page.js"
 import { useAppDispatch as useDispatch } from "../store.js"
 import { Form, FormTextView, FormButtonRow, FormValidationError } from "../views/form.js"
-import type { RecordFactory } from "immutable";
+
+import type { RecordFactory } from "immutable"
 
 const Credentials: RecordFactory<{ username: string, password: string }> = Record({
 	username: "", password: "",
