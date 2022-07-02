@@ -2,13 +2,15 @@
 
 import { Credentials } from "../data.js"
 
-// TODO: All HTTP functions should use this, not just delete
-async function parseJSONResponse<T>(response: Response) : Promise<?T> {
+class InvalidResponseError extends Error {
+}
+
+async function parseJSONResponse<T, U>(response: Response, onNoJSON: () => U) : Promise<T|U> {
 	if(response.headers.get("content-type")?.startsWith("application/json")) {
 		const json: T = await response.json()
 		return json
 	} else {
-		return null
+		return onNoJSON()
 	}
 }
 
@@ -32,8 +34,7 @@ export async function get<T>(path: string, credentials: Credentials) : Promise<T
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		headers: authHeader(credentials),
 	})
-	const json: T = await response.json()
-	return json
+	return parseJSONResponse(response, () => { throw new InvalidResponseError() })
 }
 
 /// Note: This is called `del` because `delete` is a keyword.
@@ -42,7 +43,7 @@ export async function del<T>(path: string, credentials: Credentials) : Promise<?
 		method: "DELETE",
 		headers: authHeader(credentials),
 	})
-	return parseJSONResponse(response)
+	return parseJSONResponse(response, () => null)
 }
 
 export async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: UpdateDTO, credentials: Credentials|null) : Promise<ResponseDTO> {
@@ -54,8 +55,7 @@ export async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: U
 			"content-type": "application/json",
 		}),
 	})
-	const json: ResponseDTO = await response.json()
-	return json
+	return parseJSONResponse(response, () => { throw new InvalidResponseError() })
 }
 
 export async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO, credentials: Credentials) : Promise<ResponseDTO> {
@@ -67,6 +67,5 @@ export async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO,
 			"content-type": "application/json",
 		}),
 	})
-	const json: ResponseDTO = await response.json()
-	return json
+	return parseJSONResponse(response, () => { throw new InvalidResponseError() })
 }
