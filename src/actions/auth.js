@@ -1,7 +1,7 @@
 // @flow strict
 
 import { Profile } from "../data.js"
-import { post } from "./http.js"
+import { HTTPError, post } from "./http.js"
 
 import type {
 	AccessTokenResponse,
@@ -75,8 +75,17 @@ export function requestAccessToken(username: string, password: string, onSuccess
 
 			onSuccess()
 		} catch(e) {
-			// TODO: Do we want to throw the ErrorResponse, or wrap it in an HTTPErrorResponse object?
-			const error: ErrorResponse = e
+			let error: ErrorResponse
+
+			if(e instanceof HTTPError && e.status === 400) {
+				// This is an OAuth ErrorResponse
+				error = await e.response.json()
+			} else {
+				error = {
+					error: "server_error",
+					error_description: e.message,
+				}
+			}
 
 			dispatch({
 				type: "REQUEST_ACCESS_TOKEN_DID_FAIL",

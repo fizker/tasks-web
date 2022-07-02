@@ -2,15 +2,31 @@
 
 import { Credentials } from "../data.js"
 
-class InvalidResponseError extends Error {
+import type { ErrorResponse } from "../dtos"
+
+export class HTTPError extends Error {
+	status: number
+	statusText: string
+	response: Response
+
+	constructor(response: Response, message?: string) {
+		super(message ?? `Request failed with status ${response.status}`)
+		this.response = response
+		this.status = response.status
+		this.statusText = response.statusText
+	}
 }
 
-async function parseJSONResponse<T, U>(response: Response, onNoJSON: () => U) : Promise<T|U> {
+async function parseJSONResponse<T, U>(response: Response, onNoJSON: (Response) => U) : Promise<T|U> {
+	if(response.status >= 400) {
+		throw new HTTPError(response)
+	}
+
 	if(response.headers.get("content-type")?.startsWith("application/json")) {
 		const json: T = await response.json()
 		return json
 	} else {
-		return onNoJSON()
+		return onNoJSON(response)
 	}
 }
 
@@ -34,7 +50,7 @@ export async function get<T>(path: string, credentials: Credentials) : Promise<T
 	const response = await fetch(`${SERVER_URL}${path}`, {
 		headers: authHeader(credentials),
 	})
-	return parseJSONResponse(response, () => { throw new InvalidResponseError() })
+	return parseJSONResponse(response, (response) => { throw new HTTPError(response, "Expected JSON body") })
 }
 
 /// Note: This is called `del` because `delete` is a keyword.
@@ -55,7 +71,7 @@ export async function post<ResponseDTO, UpdateDTO = void>(path: string, data?: U
 			"content-type": "application/json",
 		}),
 	})
-	return parseJSONResponse(response, () => { throw new InvalidResponseError() })
+	return parseJSONResponse(response, (response) => { throw new HTTPError(response, "Expected JSON body") })
 }
 
 export async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO, credentials: Credentials) : Promise<ResponseDTO> {
@@ -67,5 +83,5 @@ export async function put<ResponseDTO, UpdateDTO>(path: string, data: UpdateDTO,
 			"content-type": "application/json",
 		}),
 	})
-	return parseJSONResponse(response, () => { throw new InvalidResponseError() })
+	return parseJSONResponse(response, (response) => { throw new HTTPError(response, "Expected JSON body") })
 }
