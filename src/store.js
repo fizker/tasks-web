@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { createStore, applyMiddleware } from "redux"
 import thunkMiddleware from "redux-thunk"
 
+import { updateNetworkRequest, createNetworkRequest, upsertNetworkRequest } from "./actions.js"
 import {
 	Credentials, Profile,
 	Project, Task, Todo,
@@ -168,7 +169,10 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			networkRequests: state.networkRequests.filter(x => x.id !== action.requestID),
 		}
 	case "REQUEST_ACCESS_TOKEN_WILL_LOAD":
-		return state
+		return {
+			...state,
+			networkRequests: state.networkRequests.push(createNetworkRequest(action.requestID, "Logging in")),
+		}
 	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
 		const response = action.accessToken
 		const credentials = new Credentials({
@@ -182,8 +186,20 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			credentials,
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+			}),
 		}
 	case "REQUEST_ACCESS_TOKEN_DID_FAIL":
+		updateStoredCredentials(null)
+		return {
+			...state,
+			credentials: null,
+			profile: null,
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "failed",
+			}),
+		}
 	case "SIGN_OUT":
 		updateStoredCredentials(null)
 		return {
@@ -209,11 +225,15 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			projects: null,
+			networkRequests: state.networkRequests.push(createNetworkRequest(action.requestID, "Loading projects")),
 		}
 	case "PROJECTS_DID_LOAD":
 		return {
 			...state,
 			projects: List(action.projects),
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+			}),
 		}
 	case "CURRENT_TODO_WILL_LOAD":
 		return {
@@ -236,18 +256,23 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateProject(projects, action.project, action.temporaryID)),
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+			}),
 		}
 	case "UPDATE_PROJECT_WILL_SAVE":
 	case "UPDATE_PROJECT_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateProject(projects, action.project)),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Saving project"),
 		}
 	case "DELETE_PROJECT_WILL_SAVE":
 	case "DELETE_PROJECT_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.filter(x => x.get("id") !== action.project.get("id")),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Deleting project"),
 		}
 	case "CREATE_TASK_WILL_SAVE":
 		return {

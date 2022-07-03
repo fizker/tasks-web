@@ -1,5 +1,6 @@
 // @flow strict
 
+import { v4 as uuid } from "uuid"
 import { Profile } from "../data.js"
 import { HTTPError, post } from "./http.js"
 
@@ -11,17 +12,20 @@ import type { AppThunkAction } from "./types.js"
 
 type RequestAccessTokenWillLoadAction = {
 	type: "REQUEST_ACCESS_TOKEN_WILL_LOAD",
+	requestID: string,
 	username: string,
 	password: string,
 }
 type RequestAccessTokenDidLoadAction = {
 	type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
+	requestID: string,
 	accessToken: AccessTokenResponse,
 }
 // TODO: Throw this when getting 401
 type RequestAccessTokenDidFailAction = {
 	type: "REQUEST_ACCESS_TOKEN_DID_FAIL",
 	error: ErrorResponse,
+	requestID: string,
 }
 type RequestAccessTokenAction =
 	| RequestAccessTokenWillLoadAction
@@ -30,13 +34,16 @@ type RequestAccessTokenAction =
 
 type ProfileWillLoadAction = {
 	type: "PROFILE_WILL_LOAD",
+	requestID: string,
 }
 type ProfileDidLoadAction = {
 	type: "PROFILE_DID_LOAD",
 	profile: Profile,
+	requestID: string,
 }
 type ProfileDidFailAction = {
 	type: "PROFILE_DID_FAIL",
+	requestID: string,
 }
 type SignOutAction = {
 	type: "SIGN_OUT",
@@ -53,10 +60,13 @@ export type AuthAction =
 
 export function requestAccessToken(username: string, password: string, onSuccess: () => void) : AppThunkAction {
 	return async (dispatch) => {
+		const requestID = uuid()
+
 		dispatch({
 			type: "REQUEST_ACCESS_TOKEN_WILL_LOAD",
 			username,
 			password,
+			requestID,
 		})
 
 		const request = {
@@ -71,6 +81,7 @@ export function requestAccessToken(username: string, password: string, onSuccess
 			dispatch({
 				type: "REQUEST_ACCESS_TOKEN_DID_LOAD",
 				accessToken: res,
+				requestID,
 			})
 
 			onSuccess()
@@ -90,6 +101,7 @@ export function requestAccessToken(username: string, password: string, onSuccess
 			dispatch({
 				type: "REQUEST_ACCESS_TOKEN_DID_FAIL",
 				error: error,
+				requestID,
 			})
 		}
 	}

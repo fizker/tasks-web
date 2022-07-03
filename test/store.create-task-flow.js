@@ -22,6 +22,7 @@ describe("store.create-task-flow.js", () => {
 					tasks: List([]),
 				}),
 			],
+			requestID: "request",
 		})
 	})
 
