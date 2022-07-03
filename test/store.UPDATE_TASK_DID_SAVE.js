@@ -42,6 +42,7 @@ describe("store.UPDATE_TASK_DID_SAVE.js", () => {
 						]),
 					}),
 				]),
+				networkRequests: new List,
 			}
 		})
 		describe("moving task 4 to spot 2", () => {

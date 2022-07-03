@@ -4,6 +4,7 @@ import type { ThunkAction } from "redux-thunk"
 import type { State } from "../store.js"
 
 import type { AuthAction } from "./auth"
+import type { NetworkRequestAction } from "./networkRequests.js"
 import type { ProjectAction } from "./projects.js"
 import type { TaskAction } from "./tasks.js"
 import type { TodoAction } from "./todos.js"
@@ -15,6 +16,7 @@ type ReduxInitAction = { type: "INIT" }
 export type Action =
 	| ReduxInitAction
 	| AuthAction
+	| NetworkRequestAction
 	| ProjectAction
 	| TodoAction
 	| TaskAction

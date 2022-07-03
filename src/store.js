@@ -11,18 +11,20 @@ import {
 } from "./data.js"
 
 import type { Store, DispatchAPI } from "redux"
-import type { Action, DispatchAction } from "./actions.js"
+import type { Action, DispatchAction, NetworkRequest } from "./actions.js"
 
 export type State = $ReadOnly<{
 	projects: ?List<Project>,
 	currentTodo?: ?Todo,
 	credentials?: ?Credentials,
 	profile?: ?Profile,
+	networkRequests: List<NetworkRequest>,
 }>
 
 const defaultState: State = {
 	projects: null,
 	credentials: loadStoredCredentials(),
+	networkRequests: new List,
 }
 
 function loadStoredCredentials() : Credentials|null {
@@ -160,6 +162,11 @@ function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
 
 export function reducer(state?: State = defaultState, action: Action) : State {
 	switch(action.type) {
+	case "NETWORK_REQUEST_CLEAR":
+		return {
+			...state,
+			networkRequests: state.networkRequests.filter(x => x.id !== action.requestID),
+		}
 	case "REQUEST_ACCESS_TOKEN_WILL_LOAD":
 		return state
 	case "REQUEST_ACCESS_TOKEN_DID_LOAD":
