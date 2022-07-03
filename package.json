@@ -23,7 +23,7 @@
     "immutable": "^4.0.0-rc.12",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-redux": "^7.2.3",
+    "react-redux": "^8.0.2",
     "react-router-dom": "^6.2.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
@@ -34,8 +34,8 @@
     "@babel/register": "^7.16.9",
     "@fizker/serve-prepare": "^0.3.0",
     "chai": "^4.3.5",
-    "flow-bin": "^0.175.0",
+    "flow-bin": "^0.181.2",
     "flow-typed": "^3.3.1",
-    "mocha": "^9.2.0"
+    "mocha": "^10.0.0"
   }
 }
