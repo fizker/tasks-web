@@ -30,6 +30,7 @@ import {
 	ResetTitle,
 	TitleFromProject,
 } from "./titles.js"
+import { NetworkRequestView } from "./views/NetworkRequestView"
 
 export function App() : React.Node {
 	const credentials = useSelector(x => x.credentials)
@@ -38,6 +39,7 @@ export function App() : React.Node {
 	return <Router>
 		<ResetTitle />
 		<div>
+			<NetworkRequestView />
 			<nav id="main-menu">
 				{ credentials == null
 				? <>
