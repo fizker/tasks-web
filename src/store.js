@@ -162,6 +162,10 @@ function updateTaskSortOrder(tasks: List<Task>, task: Task) : List<Task> {
 }
 
 export function reducer(state?: State = defaultState, action: Action) : State {
+	function addNetworkRequest(id: string, message: string) : List<NetworkRequest> {
+		return state.networkRequests.push(createNetworkRequest(id, message))
+	}
+
 	switch(action.type) {
 	case "NETWORK_REQUEST_CLEAR":
 		return {
@@ -206,19 +210,33 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			...state,
 			credentials: null,
 			profile: null,
+			networkRequests: updateNetworkRequest(addNetworkRequest("sign-out", "Signed out"), "sign-out", {
+				status: "succeeded",
+			}),
 		}
 
 	case "PROFILE_WILL_LOAD":
-		return state
+		return {
+			...state,
+			networkRequests: addNetworkRequest(action.requestID, "Loading profile"),
+		}
 	case "PROFILE_DID_LOAD":
 		return {
 			...state,
 			profile: action.profile,
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+				message: "Profile loaded",
+			}),
 		}
 	case "PROFILE_DID_FAIL":
 		return {
 			...state,
 			profile: null,
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "failed",
+				message: "Failed to load profile",
+			}),
 		}
 
 	case "PROJECTS_WILL_LOAD":
@@ -279,6 +297,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			projects: state.projects?.update(projects => {
 				return projects.push(action.project)
 			}),
+			networkRequests: addNetworkRequest(action.requestID, "Creating project"),
 		}
 	case "CREATE_PROJECT_DID_SAVE":
 		return {
@@ -302,6 +321,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			projects: state.projects?.filter(x => x.get("id") !== action.project.get("id")),
 			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Deleting project"),
 		}
+
 	case "CREATE_TASK_WILL_SAVE":
 		return {
 			...state,
@@ -318,23 +338,30 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 					),
 				)
 			}),
+			networkRequests: addNetworkRequest(action.requestID, "Creating task"),
 		}
 	case "CREATE_TASK_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateTaskInProject(projects, action.task, action.temporaryID)),
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+				message: "Task created",
+			}),
 		}
 	case "UPDATE_TASK_WILL_SAVE":
 	case "UPDATE_TASK_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateTaskInProject(projects, action.task)),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Updating task"),
 		}
 	case "DELETE_TASK_WILL_SAVE":
 	case "DELETE_TASK_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.update(projects => deleteTaskInProject(projects, action.task)),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Deleting task"),
 		}
 	case "INIT":
 		// Don't do anything here. Redux does not always actually call it INIT
