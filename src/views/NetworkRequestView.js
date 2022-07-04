@@ -24,7 +24,7 @@ function relativeDate(date: Date) : string {
 		}
 	}
 
-	return new Intl.RelativeTimeFormat().format(-Math.floor(diff), unit)
+	return new Intl.RelativeTimeFormat().format(-Math.ceil(diff), unit)
 }
 
 export function NetworkRequestView() : React.Node {
@@ -32,23 +32,35 @@ export function NetworkRequestView() : React.Node {
 	const [ _, setCounter ] = React.useState(Date.now())
 	const dispatch = useDispatch()
 
+	React.useEffect(() => {
+		for(const req of networkRequests) {
+			if(req.status === "succeeded" && (Date.now() - req.updatedAt) > 10_000) {
+				dispatch(clearNetworkRequest(req.id))
+			}
+		}
+
+		if(networkRequests.size === 0) {
+			return
+		}
+
+		const timeout = setTimeout(() => setCounter(Date.now()), 100)
+		return () => {
+			clearTimeout(timeout)
+		}
+	})
+
 	if(networkRequests.size === 0) {
 		return null
 	}
 
-	setTimeout(() => setCounter(Date.now()), 500)
-
-	for(const req of networkRequests) {
-		if(req.status === "succeeded" && (Date.now() - req.updatedAt) > 10_000) {
-			dispatch(clearNetworkRequest(req.id))
-		}
-	}
-
-	return <div>
-		{networkRequests.map(x => <div key={x.id}>
-			{x.message} - {x.status}
-			({relativeDate(x.updatedAt)})
-			{x.status === "succeeded" && <button type="button" onClick={() => { dispatch(clearNetworkRequest(x.id)) }}>X</button>}
+	return <div className="net-req-container">
+		{networkRequests.map(x => <div key={x.id} className="net-req">
+			<span className="net-req__message">{x.message}</span>
+			<span className="net-req__status">{x.status}</span>
+			<span className="net-req__updated-at">({relativeDate(x.updatedAt)})</span>
+			<span className="net-req__button">
+				{x.status !== "waitingForResponse" && <button type="button" onClick={() => { dispatch(clearNetworkRequest(x.id)) }}>X</button>}
+			</span>
 		</div>)}
 	</div>
 }
