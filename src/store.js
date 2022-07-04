@@ -239,12 +239,40 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			currentTodo: null,
+			networkRequests: state.networkRequests.push(createNetworkRequest(
+				action.requestID,
+				"Loading current todo",
+			)),
 		}
 	case "CURRENT_TODO_DID_LOAD":
 		return {
 			...state,
 			currentTodo: action.todo,
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+				message: "Todo loaded",
+			}),
 		}
+	case "CURRENT_TODO_WILL_UPDATE":
+		return {
+			...state,
+			networkRequests: state.networkRequests.push(createNetworkRequest(
+				action.requestID,
+				action.todoUpdate.task?.status === "done"
+					? "Completing todo"
+					: "Updating current todo",
+			)),
+		}
+	case "CURRENT_TODO_DID_UPDATE":
+		return {
+			...state,
+			currentTodo: action.todo,
+			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
+				status: "succeeded",
+				message: "Todo updated",
+			}),
+		}
+
 	case "CREATE_PROJECT_WILL_SAVE":
 		return {
 			...state,
