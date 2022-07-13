@@ -34,7 +34,7 @@ export function NetworkRequestView() : React.Node {
 
 	React.useEffect(() => {
 		for(const req of networkRequests) {
-			if(req.status === "succeeded" && (Date.now() - req.updatedAt) > 10_000) {
+			if(req.status === "succeeded" && (Date.now() - req.updatedAt) > 5_000) {
 				dispatch(clearNetworkRequest(req.id))
 			}
 		}
