@@ -365,7 +365,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			projects: state.projects?.update(projects => updateTaskInProject(projects, action.task)),
 			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, {
 				create: "Updating task",
-				success: "Task created",
+				success: "Task updated",
 			}),
 		}
 	case "DELETE_TASK_WILL_SAVE":
