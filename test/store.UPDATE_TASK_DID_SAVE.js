@@ -8,6 +8,8 @@ import { reducer } from "../src/store.js"
 import { Project, Task } from "../src/data.js"
 
 describe("store.UPDATE_TASK_DID_SAVE.js", () => {
+	const requestID = "abc"
+
 	let state = reducer(undefined, { type: "INIT" })
 	beforeEach(() => {
 		state = reducer(undefined, { type: "INIT" })
@@ -55,6 +57,7 @@ describe("store.UPDATE_TASK_DID_SAVE.js", () => {
 
 				state = reducer(state, {
 					type: "UPDATE_TASK_DID_SAVE",
+					requestID,
 					task,
 				})
 			})
@@ -83,6 +86,7 @@ describe("store.UPDATE_TASK_DID_SAVE.js", () => {
 
 				state = reducer(state, {
 					type: "UPDATE_TASK_DID_SAVE",
+					requestID,
 					task,
 				})
 			})
