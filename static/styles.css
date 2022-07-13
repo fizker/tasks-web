@@ -3,7 +3,7 @@ body {
 	--color-separator: var(--color-foreground);
 	--color-link: #180;
 	--color-foreground: #030;
-	--color-background: #efe1;
+	--color-background: white;
 	--color-shadow: var(--color-foreground);
 	--color-focus-ring: #180;
 	--shadow-drop: 2px 2px var(--color-shadow);
@@ -94,4 +94,52 @@ textarea, input {
 
 .validation-error {
 	color: var(--color-validation);
+}
+
+.net-req-container {
+	max-width: 500px;
+	width: 90vw;
+	position: fixed;
+	top: 3rem;
+	right: 3rem;
+	background: var(--color-background);
+	color: var(--color-foreground);
+	padding: 1rem 1rem;
+	border: 1px solid var(--color-separator);
+
+	display: grid;
+	grid-template-areas: "message updated-at status buttons";
+	column-gap: 1rem;
+	row-gap: 0.5rem;
+	grid-template-columns: [col-start] 1fr max-content max-content max-content [col-end];
+}
+
+.net-req {
+	display: grid;
+	grid-column: col-start / col-end;
+	grid-template-columns: subgrid;
+}
+
+.net-req__message {
+	grid-area: message;
+}
+
+.net-req__status {
+	grid-area: status;
+}
+
+.net-req__updated-at {
+	grid-area: updated-at;
+}
+
+.net-req__button {
+	grid-area: buttons;
+}
+
+@supports not (grid-template-rows: subgrid) {
+	.net-req {
+		grid-template-areas: "message updated-at status buttons";
+		grid-template-columns: [col-start] 1fr max-content max-content max-content [col-end];
+		column-gap: 1rem;
+	}
 }

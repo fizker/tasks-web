@@ -10,6 +10,7 @@ import { Project, Task } from "../src/data.js"
 
 describe("store.create-task-flow.js", () => {
 	const projectID = "test-project"
+	const requestID = "abc"
 
 	let state = reducer(undefined, { type: "INIT" })
 	beforeEach(() => {
@@ -22,6 +23,7 @@ describe("store.create-task-flow.js", () => {
 					tasks: List([]),
 				}),
 			],
+			requestID: "request",
 		})
 	})
 
@@ -30,6 +32,7 @@ describe("store.create-task-flow.js", () => {
 			state = reducer(state, {
 				type: "CREATE_TASK_WILL_SAVE",
 				projectID,
+				requestID,
 				temporaryID: "new-task",
 				task: new Task({
 					id: "new-task",
@@ -53,6 +56,7 @@ describe("store.create-task-flow.js", () => {
 			beforeEach(() => {
 				state = reducer(state, {
 					type: "CREATE_TASK_DID_SAVE",
+					requestID,
 					temporaryID: "new-task",
 					task: new Task({
 						id: "saved-task",

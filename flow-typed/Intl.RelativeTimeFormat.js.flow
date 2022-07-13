@@ -1,0 +1,45 @@
+type Options = {
+	locale: string,
+	style: "long" | "short" | "narrow",
+	numeric: "auto" | "always",
+	numberingSystem: string,
+}
+
+type Unit =
+	| "year"
+	| "years"
+	| "quarter"
+	| "quarters"
+	| "month"
+	| "months"
+	| "week"
+	| "weeks"
+	| "hour"
+	| "hours"
+	| "second"
+	| "seconds"
+	| "minute"
+	| "minutes"
+	| "day"
+	| "days"
+
+declare class RelativeTimeFormat {
+	constructor(language?: ?string, options?: ?Options) : RelativeTimeFormat;
+
+	format(value: number, unit: Unit) : string;
+	formatToParts(value: number, unit: Unit) : Array<{ type: string, value: string }>;
+	resolvedOptions() : Options;
+
+	static supportedLocalesOf(locales: Array<string>, options?: ?{ localeMatcher: "lookup" | "best fit" }) : Array<string>
+}
+
+declare var Intl: {
+	RelativeTimeFormat: Class<RelativeTimeFormat>,
+
+	// Repeating the built-ins from https://github.com/facebook/flow/blob/main/lib/intl.js
+	Collator: Class<Intl$Collator>,
+	DateTimeFormat: Class<Intl$DateTimeFormat>,
+	NumberFormat: Class<Intl$NumberFormat>,
+	PluralRules: ?Class<Intl$PluralRules>,
+	getCanonicalLocales?: (locales?: Intl$Locales) => Intl$Locale[],
+}

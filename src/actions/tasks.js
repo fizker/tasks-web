@@ -1,5 +1,7 @@
 // @flow strict
 
+import { v4 as uuid } from "uuid"
+
 import { del, post, get, put } from "./http.js"
 import { Task } from "../data.js"
 
@@ -13,27 +15,33 @@ type CreateTaskWillSaveAction = {
 	projectID: string,
 	task: Task,
 	temporaryID: UUID,
+	requestID: string,
 }
 type CreateTaskDidSaveAction = {
 	type: "CREATE_TASK_DID_SAVE",
 	task: Task,
 	temporaryID: UUID,
+	requestID: string,
 }
 type UpdateTaskWillSaveAction = {
 	type: "UPDATE_TASK_WILL_SAVE",
 	task: Task,
+	requestID: string,
 }
 type UpdateTaskDidSaveAction = {
 	type: "UPDATE_TASK_DID_SAVE",
 	task: Task,
+	requestID: string,
 }
 type DeleteTaskWillSaveAction = {
 	type: "DELETE_TASK_WILL_SAVE",
 	task: Task,
+	requestID: string,
 }
 type DeleteTaskDidSaveAction = {
 	type: "DELETE_TASK_DID_SAVE",
 	task: Task,
+	requestID: string,
 }
 export type TaskAction =
 	| CreateTaskWillSaveAction
@@ -48,6 +56,7 @@ export function createTask(projectID: string, task: Task) : AppThunkAction {
 		const { credentials } = getState()
 		if(credentials == null) return
 
+		const requestID = uuid()
 		const project = getState().projects?.find(x => x.get("id") === projectID)
 
 		if(project == null) {
@@ -66,6 +75,7 @@ export function createTask(projectID: string, task: Task) : AppThunkAction {
 				.set("id", tempID)
 				.set("project", projectID)
 				.set("sortOrder", highestSortOrder + 1),
+			requestID,
 		})
 
 		const json: TaskDTO = await post(`/projects/${projectID}/tasks`, task.toJSON(), credentials)
@@ -74,6 +84,7 @@ export function createTask(projectID: string, task: Task) : AppThunkAction {
 			type: "CREATE_TASK_DID_SAVE",
 			temporaryID: tempID,
 			task: new Task(json),
+			requestID,
 		})
 	}
 }
@@ -83,6 +94,7 @@ export function deleteTask(task: Task) : AppThunkAction {
 		const { credentials } = getState()
 		if(credentials == null) return
 
+		const requestID = uuid()
 		const taskID = task.get("id")
 		const projectID = task.get("project")
 
@@ -97,6 +109,7 @@ export function deleteTask(task: Task) : AppThunkAction {
 		dispatch({
 			type: "DELETE_TASK_WILL_SAVE",
 			task,
+			requestID,
 		})
 
 		await del(`/projects/${projectID}/tasks/${taskID}`, credentials)
@@ -104,6 +117,7 @@ export function deleteTask(task: Task) : AppThunkAction {
 		dispatch({
 			type: "DELETE_TASK_DID_SAVE",
 			task,
+			requestID,
 		})
 	}
 }
@@ -113,6 +127,7 @@ export function updateTask(task: Task) : AppThunkAction {
 		const { credentials } = getState()
 		if(credentials == null) return
 
+		const requestID = uuid()
 		const taskID = task.get("id")
 		const projectID = task.get("project")
 
@@ -127,6 +142,7 @@ export function updateTask(task: Task) : AppThunkAction {
 		dispatch({
 			type: "UPDATE_TASK_WILL_SAVE",
 			task: task,
+			requestID,
 		})
 
 		const json: TaskDTO = await put(`/projects/${projectID}/tasks/${taskID}`, task.toJSON(), credentials)
@@ -134,6 +150,7 @@ export function updateTask(task: Task) : AppThunkAction {
 		dispatch({
 			type: "UPDATE_TASK_DID_SAVE",
 			task: new Task(json),
+			requestID,
 		})
 	}
 }

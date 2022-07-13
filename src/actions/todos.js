@@ -1,5 +1,7 @@
 // @flow strict
 
+import { v4 as uuid } from "uuid"
+
 import { Project, Task, Todo } from "../data.js"
 import { get, post } from "./http.js"
 import { parseTodo } from "./parsers.js"
@@ -11,26 +13,43 @@ import type { AppThunkAction } from "./types.js"
 
 type CurrentTodoWillLoadAction = {
 	type: "CURRENT_TODO_WILL_LOAD",
+	requestID: string,
 }
 type CurrentTodoDidLoadAction = {
 	type: "CURRENT_TODO_DID_LOAD",
 	todo: Todo,
+	requestID: string,
+}
+type CurrentTodoWillUpdateAction = {
+	type: "CURRENT_TODO_WILL_UPDATE",
+	todoUpdate: UpdateTodoDTO,
+	requestID: string,
+}
+type CurrentTodoDidUpdateAction = {
+	type: "CURRENT_TODO_DID_UPDATE",
+	todo: Todo,
+	requestID: string,
 }
 
 export type TodoAction =
 	| CurrentTodoWillLoadAction
 	| CurrentTodoDidLoadAction
+	| CurrentTodoWillUpdateAction
+	| CurrentTodoDidUpdateAction
 
 export function fetchCurrentTodo() : AppThunkAction {
 	return async(dispatch, getState) => {
 		const { credentials, currentTodo } = getState()
 		if(credentials == null) return
 
-		dispatch({ type: "CURRENT_TODO_WILL_LOAD" })
+		const requestID = uuid()
+
+		dispatch({ type: "CURRENT_TODO_WILL_LOAD", requestID })
 		const json: TodoDTO = await get("/todo", credentials)
 		dispatch({
 			type: "CURRENT_TODO_DID_LOAD",
 			todo: parseTodo(json),
+			requestID,
 		})
 	}
 }
@@ -43,6 +62,8 @@ export function changeCurrentTodo(taskStatus: ?$Keys<TaskStatus>) : AppThunkActi
 		if(currentTodo == null) {
 			throw new Error("CurrentTodo must be loaded before it can be updated")
 		}
+
+		const requestID = uuid()
 
 		let taskUpdate: ?TaskUpdateDTO
 		if(taskStatus != null) {
@@ -61,11 +82,19 @@ export function changeCurrentTodo(taskStatus: ?$Keys<TaskStatus>) : AppThunkActi
 			project: currentTodo.get("project").get("id") ?? "",
 			task: taskUpdate,
 		}
+
+		dispatch({
+			type: "CURRENT_TODO_WILL_UPDATE",
+			todoUpdate: updateDTO,
+			requestID,
+		})
+
 		const json: TodoDTO = await post("/todo", updateDTO, credentials)
 
 		dispatch({
-			type: "CURRENT_TODO_DID_LOAD",
+			type: "CURRENT_TODO_DID_UPDATE",
 			todo: parseTodo(json),
+			requestID,
 		})
 
 		dispatch(fetchProjects())
