@@ -5,6 +5,8 @@ import * as React from "react"
 import { clearNetworkRequest } from "../actions"
 import { useAppDispatch as useDispatch, useAppSelector as useSelector } from "../store.js"
 
+import type { NetworkRequestStatus } from "../actions/networkRequests.js"
+
 function relativeDate(date: Date) : string {
 	let unit = "seconds"
 	let diff = (Date.now() - date) / 1000
@@ -56,11 +58,19 @@ export function NetworkRequestView() : React.Node {
 	return <div className="net-req-container">
 		{networkRequests.map(x => <div key={x.id} className="net-req">
 			<span className="net-req__message">{x.message}</span>
-			<span className="net-req__status">{x.status}</span>
+			<span className="net-req__status">{translateStatus(x.status)}</span>
 			<span className="net-req__updated-at">({relativeDate(x.updatedAt)})</span>
 			<span className="net-req__button">
 				{x.status !== "waitingForResponse" && <button type="button" onClick={() => { dispatch(clearNetworkRequest(x.id)) }}>X</button>}
 			</span>
 		</div>)}
 	</div>
+}
+
+function translateStatus(status: NetworkRequestStatus) : string {
+	switch(status) {
+	case "waitingForResponse": return "pending"
+	case "succeeded": return ""
+	case "failed": return "failed"
+	}
 }

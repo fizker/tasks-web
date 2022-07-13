@@ -2,9 +2,10 @@
 
 import { List } from "immutable"
 
+export type NetworkRequestStatus = "waitingForResponse" | "succeeded" | "failed"
 export type NetworkRequest = $ReadOnly<{
 	id: string,
-	status: "waitingForResponse" | "succeeded" | "failed",
+	status: NetworkRequestStatus,
 	updatedAt: Date,
 	message: string,
 }>
