@@ -3,7 +3,7 @@ body {
 	--color-separator: var(--color-foreground);
 	--color-link: #180;
 	--color-foreground: #030;
-	--color-background: #efe1;
+	--color-background: white;
 	--color-shadow: var(--color-foreground);
 	--color-focus-ring: #180;
 	--shadow-drop: 2px 2px var(--color-shadow);
