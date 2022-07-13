@@ -42,9 +42,9 @@ export function updateNetworkRequest(requests: List<NetworkRequest>, requestID: 
 	})
 }
 
-export function upsertNetworkRequest(requests: List<NetworkRequest>, requestID: string, message: string) : List<NetworkRequest> {
-	const updatedList = updateNetworkRequest(requests, requestID, { status: "succeeded" })
+export function upsertNetworkRequest(requests: List<NetworkRequest>, requestID: string, messages: { create: string, success: string }) : List<NetworkRequest> {
+	const updatedList = updateNetworkRequest(requests, requestID, { status: "succeeded", message: messages.success })
 	return updatedList === requests
-		? requests.push(createNetworkRequest(requestID, message))
+		? requests.push(createNetworkRequest(requestID, messages.create))
 		: updatedList
 }

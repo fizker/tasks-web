@@ -192,6 +192,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			credentials,
 			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
 				status: "succeeded",
+				message: "Login succeeded",
 			}),
 		}
 	case "REQUEST_ACCESS_TOKEN_DID_FAIL":
@@ -251,6 +252,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			projects: List(action.projects),
 			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
 				status: "succeeded",
+				message: "Projects loaded",
 			}),
 		}
 	case "CURRENT_TODO_WILL_LOAD":
@@ -305,6 +307,7 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 			projects: state.projects?.update(projects => updateProject(projects, action.project, action.temporaryID)),
 			networkRequests: updateNetworkRequest(state.networkRequests, action.requestID, {
 				status: "succeeded",
+				message: "Project created",
 			}),
 		}
 	case "UPDATE_PROJECT_WILL_SAVE":
@@ -312,14 +315,20 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateProject(projects, action.project)),
-			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Saving project"),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, {
+				create: "Saving project",
+				success: "Project saved",
+			}),
 		}
 	case "DELETE_PROJECT_WILL_SAVE":
 	case "DELETE_PROJECT_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.filter(x => x.get("id") !== action.project.get("id")),
-			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Deleting project"),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, {
+				create: "Deleting project",
+				success: "Project deleted",
+			}),
 		}
 
 	case "CREATE_TASK_WILL_SAVE":
@@ -354,14 +363,20 @@ export function reducer(state?: State = defaultState, action: Action) : State {
 		return {
 			...state,
 			projects: state.projects?.update(projects => updateTaskInProject(projects, action.task)),
-			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Updating task"),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, {
+				create: "Updating task",
+				success: "Task created",
+			}),
 		}
 	case "DELETE_TASK_WILL_SAVE":
 	case "DELETE_TASK_DID_SAVE":
 		return {
 			...state,
 			projects: state.projects?.update(projects => deleteTaskInProject(projects, action.task)),
-			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, "Deleting task"),
+			networkRequests: upsertNetworkRequest(state.networkRequests, action.requestID, {
+				create: "Deleting task",
+				success: "Task deleted",
+			}),
 		}
 	case "INIT":
 		// Don't do anything here. Redux does not always actually call it INIT
